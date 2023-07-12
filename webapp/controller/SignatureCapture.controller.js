@@ -10,12 +10,12 @@ sap.ui.define([
 
         return Controller.extend("com.borderstates.topazsignature.controller.SignatureCapture", {
             sigWebLoaded: function () {
-                if(!document.IsSigWebInstalled) {
+                if(!!document.IsSigWebInstalled) {
                     MessageBox.error("Unable to load the SigWeb library.");
                     return;
                 }
 
-                if(!document.IsSigWebInstalled()) {
+                if(!IsSigWebInstalled()) {
                     MessageBox.error("SigWebSDK must be installed on this computer.");
                     return;
                 }
@@ -28,7 +28,7 @@ sap.ui.define([
                     var callback = this.sigWebLoaded;
                     var sigWebScript = document.createElement('script');
                     sigWebScript.setAttribute('src','../lib/SigWebTablet.js');
-                    sigWebScript.onload = function() { setTimeout(callback, 1000) };
+                    sigWebScript.onload = callback;
                     document.head.appendChild(sigWebScript);
                 }
             }
