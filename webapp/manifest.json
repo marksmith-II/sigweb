@@ -17,7 +17,7 @@
     },
     "dataSources": {
       "mainService": {
-        "uri": "/here/goes/your/serviceurl/",
+        "uri": "/sap/opu/odata/sap/ZTOPAZ_INTEGRATION_API/",
         "type": "OData",
         "settings": {
           "annotations": [],
@@ -25,6 +25,7 @@
           "odataVersion": "2.0"
         }
       }
+     
     }
   },
   "sap.ui": {
@@ -69,7 +70,7 @@
           "bundleName": "com.borderstates.topazsignature.i18n.i18n"
         }
       },
-      "": {
+      "delItems": {
         "dataSource": "mainService",
         "preload": true,
         "settings": {}
