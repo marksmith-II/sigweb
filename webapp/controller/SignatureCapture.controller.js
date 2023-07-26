@@ -40,11 +40,30 @@ sap.ui.define(
           LCDSetPixelDepth(8);
           LCDWriteString(0, 2, 20, 375, "20pt Verdana", 27, "Tablet Instanciated");
         },
-          displayDeliveryItems: function () {
-           
+        displayDeliveryItems: function (delItemsJSON) {
+          SetTabletState(1);
+          LcdRefresh(0, 0, 0, 640, 480);
+        
+          for (var key in delItemsJSON) {
+            if (delItemsJSON.hasOwnProperty(key)) {
 
-
-          },
+              var ypos = + 50;
+              var xposDelivery = 50;
+              var xposQuantity = 425;
+              var deliveryDoc = delItemsJSON[key];
+              var Material = deliveryDoc.Material;
+              var itemQuantity = deliveryDoc.ActualDeliveryQuantity;
+              var itemString = "Item: " + Material;
+              var quantityString = "Quantity: " + itemQuantity;
+        
+              LCDSetPixelDepth(8);
+              //Item Text
+              LCDWriteString(0, 2, xposDelivery , ypos, "20pt ARIAL", 30, itemString);
+              //Quantity Text
+              LCDWriteString(0, 2, xposQuantity, ypos, "20pt ARIAL", 30, quantityString);
+            }
+          }
+        },
         // deliveryHeaderScreen: function () {},
         // customerCertHeaderScreen: function () {},
         // signatureHeaderScreen: function () {},
@@ -62,26 +81,33 @@ sap.ui.define(
           KeyPadAddHotSpot(2, 2, 260, 375, 135, 75);
         },
 
-        deliveryDetails: function () {
+        startSigProcess: function () {
           let oPromise = new Promise((resolve, reject) => {
             this.startTablet();
             resolve(true); // return value replaces true
           });
-   
+        
           oPromise
             .then(
               function () {
-                this.getDeliveryItems(80002005, "msmith", "G00d@lien1")
+                return this.getDeliveryItems(80002005, "msmith", "G00d@lien1")
                   .then(function (oData) {
-                    // Add oData items to myGlobalJSON object
+                    // Add oData items to delItemsJSON object
                     for (var i = 0; i < oData.results.length; i++) {
                       var item = oData.results[i];
                       delItemsJSON[item.ID] = item;
                     }
+                    return delItemsJSON;
                   })
                   .catch(function (err) {
                     console.log(err);
                   });
+              }.bind(this)
+            )
+            .then(
+              function (delItemsJSON) {
+                this.displayDeliveryItems(delItemsJSON);
+                resolve(true); // resolve the oPromise object
               }.bind(this)
             )
             .catch(function (err) {
@@ -89,6 +115,11 @@ sap.ui.define(
               // reject(err); // error handling
               //   MessageToast.show(err);
             });
+        
+          // Define the resolve method outside of the then block
+          function resolve(value) {
+            console.log(value);
+          }
         },
 
         getDeliveryItems: function (documentNumber, username, password) {
@@ -140,7 +171,7 @@ sap.ui.define(
           }
 
           let oPromise = new Promise((resolve, reject) => {
-            this.deliveryDetails();
+            this.startSigProcess();
             resolve(true); // return value replaces true
           });
           oPromise
