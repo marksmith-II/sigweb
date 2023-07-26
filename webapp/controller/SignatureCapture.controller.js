@@ -32,19 +32,19 @@ sap.ui.define(
         // All the business logic goes here.
 
         startTablet: function () {
-            SigWebTablet.SetTabletState(1);
+            SetTabletState(1);
           //   var tabletState = GetTabletState();
-          SigWebTablet.LcdRefresh(0, 0, 0, 640, 480);
-          SigWebTablet.LCDSendGraphicUrl(
+          LcdRefresh(0, 0, 0, 640, 480);
+          LCDSendGraphicUrl(
             1,
             2,
             0,
             0,
-            "http://localhost:8081/images/Delivery_Details%20.bmp"
+            "http://localhost:8081/images/Delivery_Details .bmp"
           );
           // LCDSendGraphicUrl( 1, 2, 0, 0, "http://localhost:8080/images/Delivery_Details%20.bmp");
-          SigWebTablet.LCDSetPixelDepth(8);
-          SigWebTablet.LCDWriteString(
+          LCDSetPixelDepth(8);
+          LCDWriteString(
             0,
             2,
             20,
@@ -60,34 +60,34 @@ sap.ui.define(
         // signatureHeaderScreen: function () {},
 
         acceptButton: function () {
-            SigWebTablet.LCDSendGraphicUrl(
+            LCDSendGraphicUrl(
             0,
             2,
             450,
             375,
             "http://localhost:8081/images/Accept_Button.bmp"
           );
-          SigWebTablet.KeyPadAddHotSpot(0, 2, 450, 370, 135, 75);
+          KeyPadAddHotSpot(0, 2, 450, 370, 135, 75);
         },
         cancelButton: function () {
-            SigWebTablet.LCDSendGraphicUrl(
+            LCDSendGraphicUrl(
             0,
             2,
             50,
             375,
             "http://localhost:8081/images/Cancel_Button.bmp"
           );
-          SigWebTablet.KeyPadAddHotSpot(1, 2, 45, 375, 135, 75);
+          KeyPadAddHotSpot(1, 2, 45, 375, 135, 75);
         },
         clearButton: function () {
-            SigWebTablet.LCDSendGraphicUrl(
+            LCDSendGraphicUrl(
             0,
             2,
             260,
             375,
             "http://localhost:8081/images/Clear_Button.bmp"
           );
-          SigWebTablet.KeyPadAddHotSpot(2, 2, 260, 375, 135, 75);
+          KeyPadAddHotSpot(2, 2, 260, 375, 135, 75);
         },
 
         deliveryDetails: function () {
@@ -129,7 +129,7 @@ sap.ui.define(
           };
 
           let sUrlParam = {
-            $expand: "to_customer_cert_status",
+            $expand: "&$to_customer_cert_status",
           };
           oDataModel.read("/" + "DeliveryItems", {
             headers: headers,
