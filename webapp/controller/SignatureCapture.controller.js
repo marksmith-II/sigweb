@@ -40,7 +40,11 @@ sap.ui.define(
           LCDSetPixelDepth(8);
           LCDWriteString(0, 2, 20, 375, "20pt Verdana", 27, "Tablet Instanciated");
         },
+          displayDeliveryItems: function () {
+           
 
+
+          };
         // deliveryHeaderScreen: function () {},
         // customerCertHeaderScreen: function () {},
         // signatureHeaderScreen: function () {},
@@ -63,17 +67,7 @@ sap.ui.define(
             this.startTablet();
             resolve(true); // return value replaces true
           });
-          // oPromise
-          //   .then(
-          //     function () {
-          //       this.getDeliveryItems(80002005, "msmith", "G00d@lien1");
-          //       resolve(oData); 
-          //       // var deliveryItems = [];
-          //       // deliveryItems = oData;// returns Delivery Items
-          //       // console.log(oData);
-          //     }.bind(this)
-          //   )
-
+   
           oPromise
             .then(
               function () {
