@@ -4,6 +4,7 @@
     "id": "com.borderstates.topazsignature",
     "type": "application",
     "i18n": "i18n/i18n.properties",
+    "embeds": ["lib"],
     "applicationVersion": {
       "version": "0.0.1"
     },
@@ -20,10 +21,9 @@
         "uri": "/sap/opu/odata/sap/ZTOPAZ_INTEGRATION_API/",
         "type": "OData",
         "settings": {
-          "annotations": [],
           "localUri": "localService/metadata.xml",
           "odataVersion": "2.0"
-        }
+          }
       }
      
     }
@@ -70,10 +70,14 @@
           "bundleName": "com.borderstates.topazsignature.i18n.i18n"
         }
       },
-      "delItems": {
+      "": {
         "dataSource": "mainService",
         "preload": true,
-        "settings": {}
+        "settings": {
+          "autoExpandSelect" : true,
+					"odataVersion" : "2.0",
+					"operationMode" : "Server"
+        }
       }
     },
     "resources": {

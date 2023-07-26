@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://sap.github.io/ui5-tooling/schema/ui5.yaml.json
 
-specVersion: "2.5"
+specVersion: "2.6"
 metadata:
   name: com.borderstates.topazsignature
 type: application
@@ -30,14 +30,16 @@ server:
       configuration:
         ignoreCertError: true # If set to true, certificate errors will be ignored. E.g. self-signed certificates will be accepted
         backend:
-          - path: /here
-            url: http://localhost
+          - path: /sap 
+            url: http://34.200.61.165:44300
+            client: "100"
+            destination: S4H_2020
     - name: sap-fe-mockserver
       beforeMiddleware: csp
       configuration:
         mountPath: /
         services:
-          - urlPath: /here/goes/your/serviceurl
+          - urlPath: /sap/opu/odata/sap/ZTOPAZ_INTEGRATION_API/
             metadataPath: ./webapp/localService/metadata.xml
             mockdataPath: ./webapp/localService/data
             generateMockData: true
