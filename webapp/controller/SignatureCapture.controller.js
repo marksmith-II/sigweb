@@ -44,7 +44,7 @@ sap.ui.define(
            
 
 
-          };
+          },
         // deliveryHeaderScreen: function () {},
         // customerCertHeaderScreen: function () {},
         // signatureHeaderScreen: function () {},
