@@ -43,13 +43,15 @@ sap.ui.define(
         displayDeliveryItems: function (delItemsJSON) {
           SetTabletState(1);
           LcdRefresh(0, 0, 0, 640, 480);
-        
+
+          var ypos = + 50;
+          var xposDelivery = 50;
+          var xposQuantity = 425;
+
+
           for (var key in delItemsJSON) {
             if (delItemsJSON.hasOwnProperty(key)) {
 
-              var ypos = + 50;
-              var xposDelivery = 50;
-              var xposQuantity = 425;
               var deliveryDoc = delItemsJSON[key];
               var Material = deliveryDoc.Material;
               var itemQuantity = deliveryDoc.ActualDeliveryQuantity;
@@ -61,6 +63,7 @@ sap.ui.define(
               LCDWriteString(0, 2, xposDelivery , ypos, "20pt ARIAL", 30, itemString);
               //Quantity Text
               LCDWriteString(0, 2, xposQuantity, ypos, "20pt ARIAL", 30, quantityString);
+              ypos += 50; // increment the y position
             }
           }
         },
