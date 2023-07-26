@@ -1,3 +1,4 @@
+var delItemsJSON = {};
 sap.ui.define(
   [
     "sap/ui/core/mvc/Controller",
@@ -35,7 +36,7 @@ sap.ui.define(
           SetTabletState(1);
           //   var tabletState = GetTabletState();
           LcdRefresh(0, 0, 0, 640, 480);
-          LCDSendGraphicUrl(1, 2, 0, 0, "http://localhost:8081/images/Delivery_Details .bmp");
+          LCDSendGraphicUrl(1, 2, 0, 0, "http://localhost:8080/images/Delivery_Details%20.bmp");
           LCDSetPixelDepth(8);
           LCDWriteString(0, 2, 20, 375, "20pt Verdana", 27, "Tablet Instanciated");
         },
@@ -45,15 +46,15 @@ sap.ui.define(
         // signatureHeaderScreen: function () {},
 
         acceptButton: function () {
-          LCDSendGraphicUrl( 0, 2, 450, 375, "http://localhost:8081/images/Accept_Button.bmp"  );
+          LCDSendGraphicUrl(0, 2, 450, 375, "http://localhost:8081/images/Accept_Button.bmp");
           KeyPadAddHotSpot(0, 2, 450, 370, 135, 75);
         },
         cancelButton: function () {
-          LCDSendGraphicUrl( 0, 2, 50, 375, "http://localhost:8081/images/Cancel_Button.bmp"  );
+          LCDSendGraphicUrl(0, 2, 50, 375, "http://localhost:8081/images/Cancel_Button.bmp");
           KeyPadAddHotSpot(1, 2, 45, 375, 135, 75);
         },
         clearButton: function () {
-          LCDSendGraphicUrl(  0,  2, 260,  375, "http://localhost:8081/images/Clear_Button.bmp"  );
+          LCDSendGraphicUrl(0, 2, 260, 375, "http://localhost:8081/images/Clear_Button.bmp");
           KeyPadAddHotSpot(2, 2, 260, 375, 135, 75);
         },
 
@@ -62,10 +63,31 @@ sap.ui.define(
             this.startTablet();
             resolve(true); // return value replaces true
           });
+          // oPromise
+          //   .then(
+          //     function () {
+          //       this.getDeliveryItems(80002005, "msmith", "G00d@lien1");
+          //       resolve(oData); 
+          //       // var deliveryItems = [];
+          //       // deliveryItems = oData;// returns Delivery Items
+          //       // console.log(oData);
+          //     }.bind(this)
+          //   )
+
           oPromise
             .then(
               function () {
-                this.getDeliveryItems(80002005, "msmith", "G00d@lien1"); // next function
+                this.getDeliveryItems(80002005, "msmith", "G00d@lien1")
+                  .then(function (oData) {
+                    // Add oData items to myGlobalJSON object
+                    for (var i = 0; i < oData.results.length; i++) {
+                      var item = oData.results[i];
+                      delItemsJSON[item.ID] = item;
+                    }
+                  })
+                  .catch(function (err) {
+                    console.log(err);
+                  });
               }.bind(this)
             )
             .catch(function (err) {
@@ -76,37 +98,41 @@ sap.ui.define(
         },
 
         getDeliveryItems: function (documentNumber, username, password) {
-          let that = this;
-          let aFilters = [];
-          let oDataModel = this.getOwnerComponent().getModel();
-          let oDeliveryDocumentNum = new Filter(
-            "DeliveryDocument",
-            FilterOperator.EQ,
-            documentNumber
-          );
-          aFilters.push(oDeliveryDocumentNum);
+          return new Promise(function (resolve, reject) {
+            let that = this;
+            let aFilters = [];
+            let oDataModel = this.getOwnerComponent().getModel();
+            let oDeliveryDocumentNum = new Filter(
+              "DeliveryDocument",
+              FilterOperator.EQ,
+              documentNumber
+            );
+            aFilters.push(oDeliveryDocumentNum);
 
-          var headers = {
-            Authorization: "Basic " + btoa(username + ":" + password),
-            username: username,
-            password: password,
-          };
+            var headers = {
+              Authorization: "Basic " + btoa(username + ":" + password),
+              username: username,
+              password: password,
+            };
 
-          let sUrlParam = {
-            $expand: "&$to_customer_cert_status",
-          };
-          oDataModel.read("/" + "DeliveryItems", {
-            headers: headers,
-            filters: aFilters,
-            // urlParameters: sUrlParam,
-            async: true,
-            success: function (oData) {
-              console.log(oData);
-            },
-            error: function (err) {
-              return err;
-            },
-          });
+            let sUrlParam = {
+              $expand: "&$to_customer_cert_status",
+            };
+            oDataModel.read("/" + "DeliveryItems", {
+
+              headers: headers,
+              // filters: aFilters,
+              // urlParameters: sUrlParam,
+              async: true,
+              success: function (oData) {
+                resolve(oData);
+                console.log(oData);
+              },
+              error: function (err) {
+                return err;
+              },
+            });
+          }.bind(this));
         },
 
         onInit: function () {

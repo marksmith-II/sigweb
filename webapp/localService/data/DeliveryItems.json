@@ -3,9 +3,9 @@
         
       "ID": ".1~0080000023.2~000010",
       "DeliveryDocument": "80000023",
-      "DeliveryDocumentItem": "10",
-      "Material": "TG11",
-      "ActualDeliveryQuantity": "2",
+      "DeliveryDocumentItem": "11",
+      "Material": "TG15",
+      "ActualDeliveryQuantity": "12",
       "DeliveryQuantityUnit": "PC"
     }
 ]
