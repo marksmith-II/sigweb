@@ -40,7 +40,7 @@ server:
         mountPath: /
         services:
           - urlPath: /sap/opu/odata/sap/ZTOPAZ_INTEGRATION_API/
-            metadataPath: ./webapp/localService/metadata.xml
+            metadataPath: ./webapp/localService/ZTOPAZ_INTEGRATION_API/metadata.xml
             mockdataPath: ./webapp/localService/data
             generateMockData: true
         annotations: []

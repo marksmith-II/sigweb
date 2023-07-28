@@ -36,7 +36,7 @@ sap.ui.define(
           SetTabletState(1);
           //   var tabletState = GetTabletState();
           LcdRefresh(0, 0, 0, 640, 480);
-          LCDSendGraphicUrl(1, 2, 0, 0, "http://localhost:8080/images/Delivery_Details%20.bmp");
+          LCDSendGraphicUrl(1, 2, 0, 0, "webapp/images/Delivery_Details .bmp");
           LCDSetPixelDepth(8);
           LCDWriteString(0, 2, 20, 375, "20pt Verdana", 27, "Tablet Instanciated");
         },
@@ -93,7 +93,7 @@ sap.ui.define(
           oPromise
             .then(
               function () {
-                return this.getDeliveryItems(80002005, "msmith", "G00d@lien1")
+                return this.getDeliveryItems("80003607", "msmith", "G00d@lien1")
                   .then(function (oData) {
                     // Add oData items to delItemsJSON object
                     for (var i = 0; i < oData.results.length; i++) {
@@ -127,9 +127,12 @@ sap.ui.define(
 
         getDeliveryItems: function (documentNumber, username, password) {
           return new Promise(function (resolve, reject) {
+            var username = "msmith";
+            var password = "G00d@lien1";
             let that = this;
             let aFilters = [];
             let oDataModel = this.getOwnerComponent().getModel();
+            // oDataModel.setSizeLimit(99999999);
             let oDeliveryDocumentNum = new Filter(
               "DeliveryDocument",
               FilterOperator.EQ,
@@ -144,12 +147,13 @@ sap.ui.define(
             };
 
             let sUrlParam = {
-              $expand: "&$to_customer_cert_status",
+              // $expand: "&$to_customer_cert_status",
+              // $top: 99999999
             };
             oDataModel.read("/" + "DeliveryItems", {
 
-              headers: headers,
-              // filters: aFilters,
+               headers: headers,
+               filters: aFilters,
               // urlParameters: sUrlParam,
               async: true,
               success: function (oData) {
