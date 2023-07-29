@@ -41,6 +41,8 @@ sap.ui.define(
           LCDWriteString(0, 2, 20, 375, "20pt Verdana", 27, "Tablet Instanciated");
         },
         displayDeliveryItems: function (delItemsJSON) {
+
+          // todo  need to  be able to display batches of 5 items at a time
           this.deliveryDetailsScreen();
           SetTabletState(1);
           LcdRefresh(0, 0, 0, 640, 480);
