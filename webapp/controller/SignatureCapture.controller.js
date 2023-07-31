@@ -1,4 +1,8 @@
 var delItemsJSON = {};
+var deliveryNumber = "";
+var customerCertRequired = false;
+var username = "msmith";
+var password = "G00d@lien1";
 sap.ui.define(
   [
     "sap/ui/core/mvc/Controller",
@@ -79,17 +83,37 @@ sap.ui.define(
 
             // Show "Next" button if there are more pages
             if (currentPage < totalPages) {
-              // Define function to handle "Next" button click
-              function handleNextClick() {
+              nextButton();
+              let buttonValue = this.screenButtonListener(nextClicked);
+              if (buttonValue.nextClicked) {
                 currentPage++;
                 displayItems();
+                // Show "Next" button
               }
-
-              // Show "Next" button
-              // ...
             } else {
               // Show "Accept" and "Cancel" buttons
-              // ...
+              let buttonValue = this.screenButtonListener(acceptClicked, cancelClicked);
+              acceptButton();
+              cancelButton();
+              if (buttonValue.acceptClicked) {
+                // Check if Customer Cert is required
+                // If yes, display Customer Cert screen
+                // If no, display Signature screen
+              } else if (buttonValue.cancelClicked) {
+
+                sap.m.MessageBox.show("Customer has canceled Delivery", {
+                  icon: sap.m.MessageBox.Icon.WARNING,
+                  title: "Cancel",
+                  actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+                  onClose: function (oAction) {
+                    if (oAction === sap.m.MessageBox.Action.YES) {
+
+                    }
+                  }
+                });
+
+              }
+
             }
           }
 
@@ -103,7 +127,23 @@ sap.ui.define(
 
         },
         customerCertHeaderScreen: function () { },
-        signatureHeaderScreen: function () { },
+       
+        signatureScreen: function () { 
+          LcdRefresh(0, 0, 0, 640, 480);
+         //get delivery number, PO number, and customer name
+
+          LCDSendGraphicUrl(1, 2, 0, 0, "webapp/images/Signature-2.bmp");
+          LCDSendGraphicUrl(1, 2, 0, 0, "webapp/images/Signature_Area.bmp");
+
+         //capture signature
+         //add buttons
+          //add button listeners
+          // add button events
+          //send signature to backend
+          // close application 
+
+
+        },
 
         acceptButton: function () {
           LCDSendGraphicUrl(0, 2, 450, 375, "../images/Accept_Button.bmp");
@@ -147,6 +187,7 @@ sap.ui.define(
           // Handle button value
           if (buttonValue.acceptClicked) {
             // Go to signature screen
+            signatureScreen();
           } else if (buttonValue.cancelClicked) {
             // Handle cancel click
 
@@ -156,17 +197,15 @@ sap.ui.define(
               actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
               onClose: function (oAction) {
                 if (oAction === sap.m.MessageBox.Action.YES) {
+                  window.close(); // Close window
 
                 }
               }
             });
-
-
           }
-
-
         },
         signatureScreen: function () {
+          signatureHeaderScreen();
 
           acceptButton();
           cancelButton();
@@ -189,22 +228,57 @@ sap.ui.define(
               actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
               onClose: function (oAction) {
                 if (oAction === sap.m.MessageBox.Action.YES) {
-
+                  window.close(); // Close window
                 } else if (buttonValue.clearClicked) {
                   signatureScreen();
                 }
               }
             });
-
-
           }
+        },
+        isCustomerCertRequired: function (deliveryNumber) {
+          return new Promise(function (resolve, reject) {
 
+            let that = this;
+            let aFilters = [];
+            let oDataModel = this.getOwnerComponent().getModel();
 
+            let oDeliveryDocumentNum = new Filter(
+              "DeliveryDocument",
+              FilterOperator.EQ,
+              deliveryNumber,
+              "CustomerCertRequired",
+              FilterOperator.EQ,
+              'X'
+            );
+            aFilters.push(oDeliveryDocumentNum);
 
+            var headers = {
+              Authorization: "Basic " + btoa(username + ":" + password),
+              username: username,
+              password: password,
+            };
+
+            oDataModel.read("/" + "CustomerCertStatus", {
+
+              headers: headers,
+              filters: aFilters,
+              // urlParameters: sUrlParam,
+              async: true,
+              success: function (oData) {
+                resolve(oData);
+                console.log(oData);
+                resolve(true); // Resolve promise with true if oData comes back
+              },
+              error: function (err) {
+                return err;
+              },
+            });
+          }.bind(this));
 
         },
-        screenButtonListener: function () {
 
+        screenButtonListener: function () {
           function checkHotspots() {
             // Check hotspots
             let acceptClicked = KeyPadQueryHotSpot(0);
@@ -239,18 +313,6 @@ sap.ui.define(
           checkHotspots();
 
         },
-        Screen2ButtonListener: function (acceptClicked, cancelClicked, clearClicked) {
-          acceptClicked = false;
-          cancelClicked = false;
-          clearClicked = false;
-
-        },
-        Screen3ButtonListener: function (acceptClicked, cancelClicked, clearClicked) {
-          acceptClicked = false;
-          cancelClicked = false;
-          clearClicked = false;
-
-        },
 
         startSigProcess: function () {
           let oPromise = new Promise((resolve, reject) => {
@@ -261,7 +323,7 @@ sap.ui.define(
           oPromise
             .then(
               function () {
-                return this.getDeliveryItems("80003607", "msmith", "G00d@lien1")
+                return this.getDeliveryItems("80003607", username, password)
                   .then(function (oData) {
                     // Add oData items to delItemsJSON object
                     for (var i = 0; i < oData.results.length; i++) {
@@ -295,8 +357,8 @@ sap.ui.define(
 
         getDeliveryItems: function (documentNumber, username, password) {
           return new Promise(function (resolve, reject) {
-            var username = "msmith";
-            var password = "G00d@lien1";
+            // var username = "msmith";
+            // var password = "G00d@lien1";
             let that = this;
             let aFilters = [];
             let oDataModel = this.getOwnerComponent().getModel();
