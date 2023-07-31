@@ -1,6 +1,7 @@
 var delItemsJSON = {};
 var delPOCustJSON = {};
-var deliveryNumber = "";
+var deliveryNumber = "80003607";
+var customerJSON = {};
 var customerCertRequired = false;
 var username = "msmith";
 var password = "G00d@lien1";
@@ -97,16 +98,16 @@ sap.ui.define(
               acceptButton();
               cancelButton();
               if (buttonValue.acceptClicked) {
-                if (isCustomerCertRequired()) {
-                  // Display Customer Cert screen
-                  customerCertScreen();
-                } else {
-                  // If no, display Signature screen
-                  signatureScreen();
-                }
-                // Check if Customer Cert is required
-                // If yes, display Customer Cert screen
-                // If no, display Signature screen
+                isCustomerCertRequired().then(function (isCertRequired) {
+                  if (isCertRequired) {
+                    // Display Customer Cert screen
+                    customerCertScreen();
+                  } else {
+                    // If no, display Signature screen
+                    signatureScreen();
+                  }
+                 
+                })
               } else if (buttonValue.cancelClicked) {
 
                 sap.m.MessageBox.show("Customer has canceled Delivery", {
@@ -181,7 +182,7 @@ sap.ui.define(
           displayCustomerCertStatement();
           acceptButton();
           cancelButton();
-          // Screen2ButtonListener();
+
           let acceptClicked = 0;
           let cancelClicked = 0;
           let buttonValue = this.screenButtonListener(acceptClicked, cancelClicked);
@@ -213,8 +214,6 @@ sap.ui.define(
           cancelButton();
           clearButton();
           //get Delivery Number, PO Number, and Customer Name from backend
-
-
 
           //capture signature
 
@@ -277,6 +276,11 @@ sap.ui.define(
               success: function (oData) {
                 resolve(oData);
                 console.log(oData);
+                 // Add oData items to customerJSON object
+                 for (var i = 0; i < oData.results.length; i++) {
+                  var item = oData.results[i];
+                  delPOCustJSON[item.ID] = item;
+                }
                 resolve(true); // Resolve promise with true if oData comes back
               },
               error: function (err) {
@@ -284,9 +288,6 @@ sap.ui.define(
               },
             });
           }.bind(this));
-
-
-
 
         },
         isCustomerCertRequired: function (deliveryNumber) {
@@ -321,6 +322,12 @@ sap.ui.define(
               success: function (oData) {
                 resolve(oData);
                 console.log(oData);
+                // Add oData items to customerJSON object
+                for (var i = 0; i < oData.results.length; i++) {
+                  var item = oData.results[i];
+                  customerJSON[item.ID] = item;
+                }
+                // return return customerJSON;
                 resolve(true); // Resolve promise with true if oData comes back
               },
               error: function (err) {
@@ -376,7 +383,7 @@ sap.ui.define(
           oPromise
             .then(
               function () {
-                return this.getDeliveryItems("80003607", username, password)
+                return this.getDeliveryItems(deliveryNumber, username, password)
                   .then(function (oData) {
                     // Add oData items to delItemsJSON object
                     for (var i = 0; i < oData.results.length; i++) {
@@ -410,12 +417,11 @@ sap.ui.define(
 
         getDeliveryItems: function (documentNumber, username, password) {
           return new Promise(function (resolve, reject) {
-            // var username = "msmith";
-            // var password = "G00d@lien1";
+
             let that = this;
             let aFilters = [];
             let oDataModel = this.getOwnerComponent().getModel();
-            // oDataModel.setSizeLimit(99999999);
+
             let oDeliveryDocumentNum = new Filter(
               "DeliveryDocument",
               FilterOperator.EQ,
