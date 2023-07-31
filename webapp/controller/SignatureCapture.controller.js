@@ -36,26 +36,33 @@ sap.ui.define(
           SetTabletState(1);
           //   var tabletState = GetTabletState();
           LcdRefresh(0, 0, 0, 640, 480);
-          
+
           LCDSetPixelDepth(8);
           LCDWriteString(0, 2, 20, 375, "20pt Verdana", 27, "Tablet Instanciated");
         },
         displayDeliveryItems: function (delItemsJSON) {
+          // Define variables
+          var itemsPerPage = 5;
+          var currentPage = 1;
+          var totalPages = Math.ceil(Object.keys(delItemsJSON).length / itemsPerPage);
 
-          // todo  need to  be able to display batches of 5 items at a time
-          this.deliveryDetailsScreen();
-          SetTabletState(1);
-          LcdRefresh(0, 0, 0, 640, 480);
-          deliveryHeaderScreen
+          // Define function to display items for current page
+          function displayItems() {
+            // Clear screen
+            this.deliveryDetailsScreen();
+            SetTabletState(1);
+            LcdRefresh(0, 0, 0, 640, 480);
+            deliveryHeaderScreen
 
-          var ypos = + 50;
-          var xposDelivery = 50;
-          var xposQuantity = 425;
+            var ypos = + 50;
+            var xposDelivery = 50;
+            var xposQuantity = 425;
 
-
-          for (var key in delItemsJSON) {
-            if (delItemsJSON.hasOwnProperty(key)) {
-
+            // Loop through items for current page
+            var startIndex = (currentPage - 1) * itemsPerPage;
+            var endIndex = Math.min(startIndex + itemsPerPage, Object.keys(delItemsJSON).length);
+            for (var i = startIndex; i < endIndex; i++) {
+              var key = Object.keys(delItemsJSON)[i];
               var deliveryDoc = delItemsJSON[key];
               var Material = deliveryDoc.Material;
               var itemQuantity = deliveryDoc.ActualDeliveryQuantity;
@@ -69,16 +76,34 @@ sap.ui.define(
               LCDWriteString(0, 2, xposQuantity, ypos, "20pt ARIAL", 30, quantityString);
               ypos += 50; // increment the y position
             }
+
+            // Show "Next" button if there are more pages
+            if (currentPage < totalPages) {
+              // Define function to handle "Next" button click
+              function handleNextClick() {
+                currentPage++;
+                displayItems();
+              }
+
+              // Show "Next" button
+              // ...
+            } else {
+              // Show "Accept" and "Cancel" buttons
+              // ...
+            }
           }
+
+          // Display items for first page
+          displayItems();
         },
-         deliveryDetailsScreen: function () {
-          
+        deliveryDetailsScreen: function () {
+
           LcdRefresh(0, 0, 0, 640, 480);
           LCDSendGraphicUrl(1, 2, 0, 0, "webapp/images/Delivery_Details .bmp");
 
-         },
-         customerCertHeaderScreen: function () {},
-         signatureHeaderScreen: function () {},
+        },
+        customerCertHeaderScreen: function () { },
+        signatureHeaderScreen: function () { },
 
         acceptButton: function () {
           LCDSendGraphicUrl(0, 2, 450, 375, "../images/Accept_Button.bmp");
