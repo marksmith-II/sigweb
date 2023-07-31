@@ -119,6 +119,10 @@ sap.ui.define(
           LCDSendGraphicUrl(0, 2, 260, 375, "../images/Clear_Button.bmp");
           KeyPadAddHotSpot(2, 2, 260, 375, 135, 75);
         },
+        nextButton: function () {
+          LCDSendGraphicUrl(0, 2, 260, 375, "../images/Next_Button.bmp");
+          KeyPadAddHotSpot(3, 2, 260, 375, 135, 75);
+        },
         displayCustomerCertStatement: function () {
           let string1 = 'The Customer Signature Certifies the Material';
           let string2 = 'described herein are being used in construction';
@@ -206,6 +210,7 @@ sap.ui.define(
             let acceptClicked = KeyPadQueryHotSpot(0);
             let cancelClicked = KeyPadQueryHotSpot(1);
             let clearClicked = KeyPadQueryHotSpot(2);
+            let nextClicked = KeyPadQueryHotSpot(3);
 
             // Check if any hotspots were clicked
             if (acceptClicked > 0 || cancelClicked > 0 || clearClicked > 0) {
@@ -219,6 +224,10 @@ sap.ui.define(
               } else if (clearClicked > 0) {
                 // Handle clear click
                 return clearClicked;
+              }
+              else if (nextClicked > 0) {
+                // Handle clear click
+                return nextClicked;
               }
             } else {
               // Hotspots not clicked, wait and check again
