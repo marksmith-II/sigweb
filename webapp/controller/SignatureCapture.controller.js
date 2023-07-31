@@ -1,4 +1,5 @@
 var delItemsJSON = {};
+var delPOCustJSON = {};
 var deliveryNumber = "";
 var customerCertRequired = false;
 var username = "msmith";
@@ -96,6 +97,13 @@ sap.ui.define(
               acceptButton();
               cancelButton();
               if (buttonValue.acceptClicked) {
+                if (isCustomerCertRequired()) {
+                  // Display Customer Cert screen
+                  customerCertScreen();
+                } else {
+                  // If no, display Signature screen
+                  signatureScreen();
+                }
                 // Check if Customer Cert is required
                 // If yes, display Customer Cert screen
                 // If no, display Signature screen
@@ -126,22 +134,15 @@ sap.ui.define(
           LCDSendGraphicUrl(1, 2, 0, 0, "webapp/images/Delivery_Details .bmp");
 
         },
-        customerCertHeaderScreen: function () { },
-       
-        signatureScreen: function () { 
+        customerCertHeaderImage: function () {
           LcdRefresh(0, 0, 0, 640, 480);
-         //get delivery number, PO number, and customer name
+          LCDSendGraphicUrl(1, 2, 0, 0, "webapp/images/Customer_Certification.bmp");
+        },
 
+        signatureScreenImages: function () {
+          LcdRefresh(0, 0, 0, 640, 480);
           LCDSendGraphicUrl(1, 2, 0, 0, "webapp/images/Signature-2.bmp");
           LCDSendGraphicUrl(1, 2, 0, 0, "webapp/images/Signature_Area.bmp");
-
-         //capture signature
-         //add buttons
-          //add button listeners
-          // add button events
-          //send signature to backend
-          // close application 
-
 
         },
 
@@ -176,6 +177,7 @@ sap.ui.define(
 
         },
         customerCertScreen: function () {
+          customerCertHeaderImage();
           displayCustomerCertStatement();
           acceptButton();
           cancelButton();
@@ -205,12 +207,20 @@ sap.ui.define(
           }
         },
         signatureScreen: function () {
-          signatureHeaderScreen();
+          signatureScreenImages();
 
           acceptButton();
           cancelButton();
           clearButton();
-          // Screen2ButtonListener();
+          //get Delivery Number, PO Number, and Customer Name from backend
+
+
+
+          //capture signature
+
+          //send signature to backend
+          //close application 
+
           let acceptClicked = 0;
           let cancelClicked = 0;
           let clearButtonClicked = 0;
@@ -235,6 +245,49 @@ sap.ui.define(
               }
             });
           }
+        },
+
+        getPODelNumCustomerName: function (deliveryNumber) {
+
+          return new Promise(function (resolve, reject) {
+
+            let that = this;
+            let aFilters = [];
+            let oDataModel = this.getOwnerComponent().getModel();
+
+            let oDeliveryDocumentNum = new Filter(
+              "DeliveryDocument",
+              FilterOperator.EQ,
+              deliveryNumber
+            );
+            aFilters.push(oDeliveryDocumentNum);
+
+            var headers = {
+              Authorization: "Basic " + btoa(username + ":" + password),
+              username: username,
+              password: password,
+            };
+
+            oDataModel.read("/" + "DeliveryPOCustomerInfo", {
+
+              headers: headers,
+              filters: aFilters,
+              // urlParameters: sUrlParam,
+              async: true,
+              success: function (oData) {
+                resolve(oData);
+                console.log(oData);
+                resolve(true); // Resolve promise with true if oData comes back
+              },
+              error: function (err) {
+                return err;
+              },
+            });
+          }.bind(this));
+
+
+
+
         },
         isCustomerCertRequired: function (deliveryNumber) {
           return new Promise(function (resolve, reject) {
