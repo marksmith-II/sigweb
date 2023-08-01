@@ -69,7 +69,8 @@
         }
       },
       "": {
-        "dataSource": "mainService"
+        "dataSource": "mainService",
+        "preload" : true
       }
     },
     "resources": {

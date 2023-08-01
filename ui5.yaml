@@ -10,9 +10,8 @@ server:
         ignoreCertError: false
         backend:
           - path: /sap
-            url: http://34.200.61.165:44300
-            client: "100"
-            destination: S4H_2020
+            url: https://s4hana2020.mindsetconsulting.com:44300
+
         ui5:
           path:
             - /resources

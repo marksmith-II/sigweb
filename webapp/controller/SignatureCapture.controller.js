@@ -422,6 +422,8 @@ sap.ui.define(
             let aFilters = [];
             let oDataModel = this.getOwnerComponent().getModel();
 
+
+
             let oDeliveryDocumentNum = new Filter(
               "DeliveryDocument",
               FilterOperator.EQ,
