@@ -47,19 +47,15 @@ sap.ui.define(
           LCDWriteString(0, 2, 20, 375, "20pt Verdana", 27, "Tablet Instanciated");
         },
         displayDeliveryItems: function (delItemsJSON) {
-          // Define variables
+          SetTabletState(1);
+          LcdRefresh(0, 0, 0, 640, 480);
+          this.deliveryDetailsScreenHeader();
           var itemsPerPage = 5;
           var currentPage = 1;
           var totalPages = Math.ceil(Object.keys(delItemsJSON).length / itemsPerPage);
 
-          // Define function to display items for current page
           function displayItems() {
-            // Clear screen
-            this.deliveryDetailsScreen();
-            SetTabletState(1);
-            LcdRefresh(0, 0, 0, 640, 480);
-            deliveryHeaderScreen
-
+            
             var ypos = + 50;
             var xposDelivery = 50;
             var xposQuantity = 425;
@@ -125,15 +121,15 @@ sap.ui.define(
 
             }
           }
-
           // Display items for first page
           displayItems();
         },
-        deliveryDetailsScreen: function () {
-
+        deliveryDetailsScreenHeader: function () {
           LcdRefresh(0, 0, 0, 640, 480);
-          LCDSendGraphicUrl(1, 2, 0, 0, "webapp/images/Delivery_Details .bmp");
-
+          // LCDSendGraphicUrl(1, 2, 0, 0, "webapp/images/DeliveryDetails.bmp");
+          // LCDSendGraphicUrl(1, 2, 0, 0, "../images/Delivery_Details%20.bmp");
+          LCDSendGraphicUrl(0, 0, 0, 0, "http://localhost:8080/images/DeliveryDetails.bmp");
+          // LcdRefresh(0, 0, 0, 640, 480);
         },
         customerCertHeaderImage: function () {
           LcdRefresh(0, 0, 0, 640, 480);
@@ -162,7 +158,7 @@ sap.ui.define(
           KeyPadAddHotSpot(2, 2, 260, 375, 135, 75);
         },
         nextButton: function () {
-          LCDSendGraphicUrl(0, 2, 260, 375, "../images/Next_Button.bmp");
+          LCDSendGraphicUrl(0, 2, 260, 375, "../images/Next-24.bmp");
           KeyPadAddHotSpot(3, 2, 260, 375, 135, 75);
         },
         displayCustomerCertStatement: function () {
@@ -467,7 +463,8 @@ sap.ui.define(
             // sigWebScript.onload = callback;
             // document.head.appendChild(sigWebScript);
           }
-
+          this.isCustomerCertRequired();
+          this.getPODelNumCustomerName();
           let oPromise = new Promise((resolve, reject) => {
             this.startSigProcess();
             resolve(true); // return value replaces true
