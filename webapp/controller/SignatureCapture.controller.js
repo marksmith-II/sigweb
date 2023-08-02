@@ -39,7 +39,7 @@ sap.ui.define(
         // All the business logic goes here.
 
         startTablet: function () {
-          SetTabletState(1);
+          // SetTabletState(1);
           //   var tabletState = GetTabletState();
           LcdRefresh(0, 0, 0, 640, 480);
 
@@ -47,15 +47,16 @@ sap.ui.define(
           LCDWriteString(0, 2, 20, 375, "20pt Verdana", 27, "Tablet Instanciated");
         },
         displayDeliveryItems: function (delItemsJSON) {
-          SetTabletState(1);
+          var that = this;
+          // SetTabletState(1);
           LcdRefresh(0, 0, 0, 640, 480);
           this.deliveryDetailsScreenHeader();
           var itemsPerPage = 5;
           var currentPage = 1;
           var totalPages = Math.ceil(Object.keys(delItemsJSON).length / itemsPerPage);
 
-          function displayItems() {
-            
+          var displayItems = function () {
+
             var ypos = + 50;
             var xposDelivery = 50;
             var xposQuantity = 425;
@@ -81,43 +82,44 @@ sap.ui.define(
 
             // Show "Next" button if there are more pages
             if (currentPage < totalPages) {
-              nextButton();
-              let buttonValue = this.screenButtonListener(nextClicked);
-              if (buttonValue.nextClicked) {
-                currentPage++;
-                displayItems();
-                // Show "Next" button
-              }
+              that.nextButton();
+              currentPage++;
+              that.screenButtonListener(3, displayItems);
+              // if (buttonValue.nextClicked) {
+
+
+              // Show "Next" button
+              // }
             } else {
-              // Show "Accept" and "Cancel" buttons
-              let buttonValue = this.screenButtonListener(acceptClicked, cancelClicked);
-              acceptButton();
-              cancelButton();
-              if (buttonValue.acceptClicked) {
-                isCustomerCertRequired().then(function (isCertRequired) {
+              let acceptFunction = function () {
+                that.isCustomerCertRequired().then(function (isCertRequired) {
                   if (isCertRequired) {
                     // Display Customer Cert screen
-                    customerCertScreen();
+                    that.customerCertScreen();
                   } else {
                     // If no, display Signature screen
-                    signatureScreen();
+                    that.signatureScreen();
                   }
-                 
-                })
-              } else if (buttonValue.cancelClicked) {
 
+                })
+              };
+              let cancelFunction = function () {
                 sap.m.MessageBox.show("Customer has canceled Delivery", {
                   icon: sap.m.MessageBox.Icon.WARNING,
                   title: "Cancel",
                   actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
                   onClose: function (oAction) {
                     if (oAction === sap.m.MessageBox.Action.YES) {
-
+                      window.close();
                     }
                   }
                 });
-
-              }
+              };
+              // Show "Accept" and "Cancel" buttons
+              that.screenButtonListener(0, acceptFunction);
+              that.screenButtonListener(1, cancelFunction);
+              that.acceptButton();
+              that.cancelButton();
 
             }
           }
@@ -126,40 +128,46 @@ sap.ui.define(
         },
         deliveryDetailsScreenHeader: function () {
           LcdRefresh(0, 0, 0, 640, 480);
-          // LCDSendGraphicUrl(1, 2, 0, 0, "webapp/images/DeliveryDetails.bmp");
-          // LCDSendGraphicUrl(1, 2, 0, 0, "../images/Delivery_Details%20.bmp");
-          LCDSendGraphicUrl(0, 0, 0, 0, "http://localhost:8080/images/DeliveryDetails.bmp");
-          // LcdRefresh(0, 0, 0, 640, 480);
+          LCDSetPixelDepth(8);
+
+          LCDSendGraphicUrl(0, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/DeliveryDetails.bmp"), document.baseURI).href);
+
+          //  LcdRefresh(0, 0, 0, 640, 480);
         },
         customerCertHeaderImage: function () {
           LcdRefresh(0, 0, 0, 640, 480);
-          LCDSendGraphicUrl(1, 2, 0, 0, "webapp/images/Customer_Certification.bmp");
+          // LCDSendGraphicUrl(1, 2, 0, 0, "webapp/images/CustomerCertification.bmp");
+          LCDSendGraphicUrl(1, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/CustomerCertification.bmp"), document.baseURI).href);
         },
 
         signatureScreenImages: function () {
           LcdRefresh(0, 0, 0, 640, 480);
-          LCDSendGraphicUrl(1, 2, 0, 0, "webapp/images/Signature-2.bmp");
-          LCDSendGraphicUrl(1, 2, 0, 0, "webapp/images/Signature_Area.bmp");
+          // LCDSendGraphicUrl(1, 2, 0, 0, "http://localhost:8080/images/Signature.bmp");
+          LCDSendGraphicUrl(1, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/Signature.bmp"), document.baseURI).href);
+          // LCDSendGraphicUrl(1, 2, 0, 0, "http://localhost:8080/images/SignatureArea.bmp");
+          LCDSendGraphicUrl(1, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/SignatureArea.bmp"), document.baseURI).href);
 
         },
 
         acceptButton: function () {
-          LCDSendGraphicUrl(0, 2, 450, 375, "../images/Accept_Button.bmp");
-          KeyPadAddHotSpot(0, 2, 450, 370, 135, 75);
+          // LCDSendGraphicUrl(0, 2, 450, 375, "http://localhost:8080/images/AcceptButton.bmp");
+          LCDSendGraphicUrl(0, 2, 450, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/AcceptButton.bmp"), document.baseURI).href);
+          KeyPadAddHotSpot(0, 1, 450, 370, 135, 75);
         },
         cancelButton: function () {
-          LCDSendGraphicUrl(0, 2, 50, 375, "../images/Cancel_Button.bmp");
-          KeyPadAddHotSpot(1, 2, 45, 375, 135, 75);
-
-
+          // LCDSendGraphicUrl(0, 2, 50, 375, "http://localhost:8080/images/CancelButton.bmp");
+          LCDSendGraphicUrl(0, 2, 50, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/CancelButton.bmp"), document.baseURI).href);
+          KeyPadAddHotSpot(1, 1, 45, 375, 135, 75);
         },
         clearButton: function () {
-          LCDSendGraphicUrl(0, 2, 260, 375, "../images/Clear_Button.bmp");
-          KeyPadAddHotSpot(2, 2, 260, 375, 135, 75);
+          // LCDSendGraphicUrl(0, 2, 260, 375, "http://localhost:8080/images/ClearButton.bmp");
+          LCDSendGraphicUrl(0, 2, 260, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/ClearButton.bmp"), document.baseURI).href);
+          KeyPadAddHotSpot(2, 1, 260, 375, 135, 75);
         },
         nextButton: function () {
-          LCDSendGraphicUrl(0, 2, 260, 375, "../images/Next-24.bmp");
-          KeyPadAddHotSpot(3, 2, 260, 375, 135, 75);
+          // LCDSendGraphicUrl(0, 2, 260, 375, "http://localhost:8080/images/Next.bmp");
+          LCDSendGraphicUrl(0, 2, 450, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/Next.bmp"), document.baseURI).href);
+          KeyPadAddHotSpot(3, 1, 450, 370, 135, 75);
         },
         displayCustomerCertStatement: function () {
           let string1 = 'The Customer Signature Certifies the Material';
@@ -251,29 +259,29 @@ sap.ui.define(
             let oDataModel = this.getOwnerComponent().getModel();
 
             let oDeliveryDocumentNum = new Filter(
-              "DeliveryDocument",
+              "DeliveryNumber",
               FilterOperator.EQ,
               deliveryNumber
             );
             aFilters.push(oDeliveryDocumentNum);
 
-            var headers = {
-              Authorization: "Basic " + btoa(username + ":" + password),
-              username: username,
-              password: password,
-            };
+            // var headers = {
+            //   Authorization: "Basic " + btoa(username + ":" + password),
+            //   username: username,
+            //   password: password,
+            // };
 
             oDataModel.read("/" + "DeliveryPOCustomerInfo", {
 
-              headers: headers,
+              // headers: headers,
               filters: aFilters,
               // urlParameters: sUrlParam,
               async: true,
               success: function (oData) {
                 resolve(oData);
                 console.log(oData);
-                 // Add oData items to customerJSON object
-                 for (var i = 0; i < oData.results.length; i++) {
+                // Add oData items to customerJSON object
+                for (var i = 0; i < oData.results.length; i++) {
                   var item = oData.results[i];
                   delPOCustJSON[item.ID] = item;
                 }
@@ -303,15 +311,15 @@ sap.ui.define(
             );
             aFilters.push(oDeliveryDocumentNum);
 
-            var headers = {
-              Authorization: "Basic " + btoa(username + ":" + password),
-              username: username,
-              password: password,
-            };
+            // var headers = {
+            //   Authorization: "Basic " + btoa(username + ":" + password),
+            //   username: username,
+            //   password: password,
+            // };
 
             oDataModel.read("/" + "CustomerCertStatus", {
 
-              headers: headers,
+              // headers: headers,
               filters: aFilters,
               // urlParameters: sUrlParam,
               async: true,
@@ -334,31 +342,21 @@ sap.ui.define(
 
         },
 
-        screenButtonListener: function () {
+        screenButtonListener: function (hotSpotNumber, callback) {
+          SetLCDCaptureMode(2);
           function checkHotspots() {
-            // Check hotspots
-            let acceptClicked = KeyPadQueryHotSpot(0);
-            let cancelClicked = KeyPadQueryHotSpot(1);
-            let clearClicked = KeyPadQueryHotSpot(2);
-            let nextClicked = KeyPadQueryHotSpot(3);
 
+            let hotspot = KeyPadQueryHotSpot(hotSpotNumber);
             // Check if any hotspots were clicked
-            if (acceptClicked > 0 || cancelClicked > 0 || clearClicked > 0) {
-              // Handle click event
-              if (acceptClicked > 0) {
-                // Handle accept click
-                return acceptClicked;
-              } else if (cancelClicked > 0) {
-                // Handle cancel click
-                return cancelClicked;
-              } else if (clearClicked > 0) {
-                // Handle clear click
-                return clearClicked;
-              }
-              else if (nextClicked > 0) {
-                // Handle clear click
-                return nextClicked;
-              }
+            ClearTablet();
+            if (KeyPadQueryHotSpot(hotSpotNumber) > 0 ) {
+              
+              // ClearSigWindow(1);
+               ClearTablet();
+              // LcdRefresh(1, 0, 0, 640, 480);
+              LcdRefresh(0, 0, 0, 640, 480);
+              KeyPadClearHotSpotList();
+              callback();
             } else {
               // Hotspots not clicked, wait and check again
               setTimeout(checkHotspots, 100);
@@ -427,11 +425,11 @@ sap.ui.define(
             );
             aFilters.push(oDeliveryDocumentNum);
 
-            var headers = {
-              Authorization: "Basic " + btoa(username + ":" + password),
-              // username: username,
-              // password: password,
-            };
+            // var headers = {
+            //   Authorization: "Basic " + btoa(username + ":" + password),
+            //   // username: username,
+            //   // password: password,
+            // };
 
             let sUrlParam = {
               // $expand: "&$to_customer_cert_status",
@@ -439,7 +437,7 @@ sap.ui.define(
             };
             oDataModel.read("/" + "DeliveryItems", {
 
-              headers: headers,
+              // headers: headers,
               filters: aFilters,
               // urlParameters: sUrlParam,
               async: true,
