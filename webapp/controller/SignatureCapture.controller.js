@@ -3,8 +3,8 @@ var delPOCustJSON = {};
 var deliveryNumber = "80003607";
 var customerJSON = {};
 var customerCertRequired = false;
-var username = "msmith";
-var password = "G00d@lien1";
+// var username = "msmith";
+// var password = "G00d@lien1";
 sap.ui.define(
   [
     "sap/ui/core/mvc/Controller",
@@ -383,7 +383,7 @@ sap.ui.define(
           oPromise
             .then(
               function () {
-                return this.getDeliveryItems(deliveryNumber, username, password)
+                return this.getDeliveryItems(deliveryNumber) //, username, password
                   .then(function (oData) {
                     // Add oData items to delItemsJSON object
                     for (var i = 0; i < oData.results.length; i++) {
@@ -433,8 +433,8 @@ sap.ui.define(
 
             var headers = {
               Authorization: "Basic " + btoa(username + ":" + password),
-              username: username,
-              password: password,
+              // username: username,
+              // password: password,
             };
 
             let sUrlParam = {
