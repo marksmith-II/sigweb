@@ -189,7 +189,7 @@ sap.ui.define(
 
           let acceptClicked = 0;
           let cancelClicked = 0;
-          let buttonValue = this.screenButtonListener(acceptClicked, cancelClicked);
+          // let buttonValue = this.screenButtonListener(acceptClicked, cancelClicked);
 
           // Handle button value
           if (buttonValue.acceptClicked) {
@@ -227,7 +227,7 @@ sap.ui.define(
           let acceptClicked = 0;
           let cancelClicked = 0;
           let clearButtonClicked = 0;
-          let buttonValue = this.screenButtonListener(acceptClicked, cancelClicked, clearButtonClicked);
+          // let buttonValue = this.screenButtonListener(acceptClicked, cancelClicked, clearButtonClicked);
 
           // Handle button value
           if (buttonValue.acceptClicked) {
@@ -359,7 +359,7 @@ sap.ui.define(
               callback();
             } else {
               // Hotspots not clicked, wait and check again
-              setTimeout(checkHotspots, 100);
+              setTimeout(checkHotspots, 5);
             }
           }
 
