@@ -112,6 +112,7 @@ sap.ui.define(
                   actions: [sap.m.MessageBox.Action.OK],
                   onClose: function (oAction) {
                     if (oAction === sap.m.MessageBox.Action.OK) {
+                      LcdRefresh(0, 0, 0, 640, 480);
                       window.close();
                     }
                   }
@@ -208,6 +209,7 @@ sap.ui.define(
               actions: [sap.m.MessageBox.Action.OK],
               onClose: function (oAction) {
                 if (oAction === sap.m.MessageBox.Action.OK) {
+                  LcdRefresh(0, 0, 0, 640, 480);
                   window.close(); // Close window
 
                 }
@@ -244,6 +246,7 @@ sap.ui.define(
               actions: [sap.m.MessageBox.Action.OK],
               onClose: function (oAction) {
                 if (oAction === sap.m.MessageBox.Action.OK) {
+                  LcdRefresh(0, 0, 0, 640, 480);
                   window.close();
                 }
               }
