@@ -461,6 +461,11 @@ sap.ui.define(
             // sigWebScript.onload = callback;
             // document.head.appendChild(sigWebScript);
           }
+          if(
+            this.getOwnerComponent().getComponentData().startupParameters.DeliveryNumber &&
+            this.getOwnerComponent().getComponentData().startupParameters.DeliveryNumber.length > 0) {
+              deliveryNumber = this.getOwnerComponent().getComponentData().startupParameters.DeliveryNumber[0];
+          }
           this.isCustomerCertRequired();
           this.getPODelNumCustomerName();
           let oPromise = new Promise((resolve, reject) => {

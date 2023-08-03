@@ -43,6 +43,9 @@
     }
   },
   "sap.ui5": {
+    "config": {
+      "sapFiori2Adaptation": true
+    },
     "flexEnabled": true,
     "dependencies": {
       "minUI5Version": "1.112.1",
