@@ -3,7 +3,13 @@
     xmlns="sap.m">
     <Page id="page" title="{i18n>title}">
         <content>
-            <Text id="Test" text="Capturing signature" />
+            <VBox id="_IDGenVBox1"
+                height="100%"
+                alignItems="Center"
+                justifyContent="Center">
+                
+                <Text id="Test" text="Capturing signature" />
+            </VBox>
         </content>
     </Page>
 </mvc:View>
