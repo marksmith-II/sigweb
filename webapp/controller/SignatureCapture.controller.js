@@ -1,6 +1,6 @@
 var delItemsJSON = {};
 var delPOCustJSON = {};
-var deliveryNumber = "80002005";
+var deliveryNumber = " ";
 var customerJSON = {};
 var customerCertRequired = false;
 
