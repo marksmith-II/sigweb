@@ -3,6 +3,32 @@ var delPOCustJSON = {};
 var deliveryNumber = "80002005";
 var customerJSON = {};
 var customerCertRequired = false;
+
+const b64toBlob = (b64Data, contentType, sliceSize) => {
+  contentType = contentType || "";
+  sliceSize = sliceSize || 512;
+
+  var byteCharacters = atob(b64Data);
+  var byteArrays = [];
+
+  for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+    var byteNumbers = new Array(slice.length);
+    for (var i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+
+    var byteArray = new Uint8Array(byteNumbers);
+
+    byteArrays.push(byteArray);
+  }
+
+  var blob = new Blob(byteArrays, { type: contentType });
+  return blob;
+};
+
+
 // var username = "msmith";
 // var password = "G00d@lien1";
 sap.ui.define(
@@ -234,10 +260,34 @@ sap.ui.define(
 
 
           let acceptFunction = function () {
-              // capture signature
-              // send to backend
-              // close app once signature is sent
-    
+
+            let callback = async function(base64image) {
+              let blobImage = b64toBlob(base64image, 'image/bmp');
+              const csrfResponse = await fetch('/sap/opu/odata/sap/ZTOPAZ_SIG_UPLOAD_SRV/', {
+                headers: {
+                  "X-CSRF-Token": "Fetch"
+                },
+                method: "HEAD"
+              });
+
+              const response = await fetch('/sap/opu/odata/sap/ZTOPAZ_SIG_UPLOAD_SRV/DeliveryDocumentSet', {
+                headers: {
+                  slug: deliveryNumber + '.bmp',
+                  "Content-Type": 'image/bmp',
+                  "DocumentNumber": deliveryNumber,
+                  "X-CSRF-Token": csrfResponse.headers.get("X-CSRF-Token")
+                },
+                method: "POST",
+                body: blob,
+              })
+                .then((response) => response.text())
+                .then((data) => {
+                  // Message box and then close window
+                });
+              return response;
+            }
+            
+            GetSigImageB64(callback);
           };
           let cancelFunction = function () {
             sap.m.MessageBox.show("Customer has canceled Delivery", {
