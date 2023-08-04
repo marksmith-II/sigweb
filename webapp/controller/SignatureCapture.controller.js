@@ -282,7 +282,17 @@ sap.ui.define(
               })
                 .then((response) => response.text())
                 .then((data) => {
-                  // Message box and then close window
+                  sap.m.MessageBox.show("Signature successfully uploaded to delivery document " + deliveryNumber, {
+                    icon: sap.m.MessageBox.Icon.SUCCESS,
+                    title: "Signature Complete",
+                    actions: [sap.m.MessageBox.Action.OK],
+                    onClose: function (oAction) {
+                      if (oAction === sap.m.MessageBox.Action.OK) {
+                        LcdRefresh(0, 0, 0, 640, 480);
+                        window.close();
+                      }
+                    }
+                  });
                 });
               return response;
             }
