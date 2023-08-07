@@ -114,7 +114,7 @@ sap.ui.define(
             } else {
               let acceptFunction = function () {
                 that.isCustomerCertRequired(deliveryNumber).then(function (isCertRequired) {
-                  if (isCertRequired ) {
+                  if (isCertRequired.results.length > 0) {
                     // Display Customer Cert screen
                     that.customerCertScreen.bind(that)();
                   } else {
@@ -196,9 +196,9 @@ sap.ui.define(
           let string3 = 'of the improvments for the referenced project';
 
           LCDSetPixelDepth(8);
-          LCDWriteString(0, 2, 8, 100, "20pt ARIAL", 30, string1);
-          LCDWriteString(0, 2, 10, 150, "20pt ARIAL", 30, string2);
-          LCDWriteString(0, 2, 10, 200, "20pt ARIAL", 30, string3);
+          LCDWriteString(0, 2, 12, 100, "20pt ARIAL", 30, string1);
+          LCDWriteString(0, 2, 12, 150, "20pt ARIAL", 30, string2);
+          LCDWriteString(0, 2, 12, 200, "20pt ARIAL", 30, string3);
 
 
         },
@@ -229,24 +229,19 @@ sap.ui.define(
                 }
               });
             };
-            // Show "Accept" and "Cancel" buttons
+            
             this.acceptButton();
             this.cancelButton();
             this.screenButtonListener(0, acceptFunction);
             this.screenButtonListener(1, cancelFunction);
 
-
-          
         },
-
-
 
         signatureScreen: function () {
           SetTabletState(1);
           KeyPadClearHotSpotList();
           SetSigWindow(1, 27, 150, 582, 210);
           this.signatureScreenImages();
-
 
         
           var keys = Object.keys(delPOCustJSON);
@@ -357,19 +352,17 @@ sap.ui.define(
 
             oDataModel.read("/" + "DeliveryPOCustomerInfo", {
 
-              // headers: headers,
               filters: aFilters,
-              // urlParameters: sUrlParam,
               async: true,
               success: function (oData) {
                 resolve(oData);
                 console.log(oData);
-                // Add oData items to customerJSON object
+                
                 for (var i = 0; i < oData.results.length; i++) {
                   var item = oData.results[i];
                   delPOCustJSON[item.ID] = item;
                 }
-                resolve(true); // Resolve promise with true if oData comes back
+                resolve(true); 
               },
               error: function (err) {
                 return err;
@@ -406,20 +399,17 @@ sap.ui.define(
 
             oDataModel.read("/" + "CustomerCertStatus", {
 
-              // headers: headers,
               filters: aFilters,
-              // urlParameters: sUrlParam,
               async: true,
               success: function (oData) {
                 resolve(oData);
                 console.log(oData);
-                // Add oData items to customerJSON object
-                for (var i = 0; i < oData.results.length; i++) {
+                  for (var i = 0; i < oData.results.length; i++) {
                   var item = oData.results[i];
                   customerJSON[item.ID] = item;
                 }
-                // return return customerJSON;
-                resolve(true); // Resolve promise with true if oData comes back
+                
+                resolve(true); 
               },
               error: function (err) {
                 return err;
@@ -434,19 +424,18 @@ sap.ui.define(
           function checkHotspots() {
 
             let hotspot = KeyPadQueryHotSpot(hotSpotNumber);
-            // Check if any hotspots were clicked
+            
             ClearTablet();
             if (KeyPadQueryHotSpot(hotSpotNumber) > 0) {
 
-              // ClearSigWindow(1);
+              
               ClearTablet();
-              // LcdRefresh(1, 0, 0, 640, 480);
+              
               LcdRefresh(0, 0, 34, 640, 480);
               KeyPadClearHotSpotList();
               callback();
             } else {
-              // Hotspots not clicked, wait and check again
-              setTimeout(checkHotspots, 5);
+               setTimeout(checkHotspots, 5);
             }
           }
 
@@ -458,7 +447,7 @@ sap.ui.define(
         startSigProcess: function () {
           let oPromise = new Promise((resolve, reject) => {
             this.startTablet();
-            resolve(true); // return value replaces true
+            resolve(true); 
           });
 
           oPromise
@@ -466,7 +455,7 @@ sap.ui.define(
               function () {
                 return this.getDeliveryItems(deliveryNumber)
                   .then(function (oData) {
-                    // Add oData items to delItemsJSON object
+                 
                     for (var i = 0; i < oData.results.length; i++) {
                       var item = oData.results[i];
                       delItemsJSON[item.ID] = item;
@@ -481,16 +470,14 @@ sap.ui.define(
             .then(
               function (delItemsJSON) {
                 this.displayDeliveryItems(delItemsJSON);
-                resolve(true); // resolve the oPromise object
+                resolve(true); 
               }.bind(this)
             )
             .catch(function (err) {
               console.log(err);
-              // reject(err); // error handling
-              //   MessageToast.show(err);
+            
             });
 
-          // Define the resolve method outside of the then block
           function resolve(value) {
             console.log(value);
           }
@@ -515,14 +502,11 @@ sap.ui.define(
 
 
             let sUrlParam = {
-              // $expand: "&$to_customer_cert_status",
-              // $top: 99999999
+
             };
             oDataModel.read("/" + "DeliveryItems", {
 
-              // headers: headers,
               filters: aFilters,
-              // urlParameters: sUrlParam,
               async: true,
               success: function (oData) {
                 resolve(oData);
@@ -538,11 +522,11 @@ sap.ui.define(
         onInit: function () {
           if (!document.IsSigWebInstalled) {
             // Do something here to check if SigWeb is installed
-            // var callback = this.sigWebLoaded;
-            // var sigWebScript = document.createElement("script");
-            // sigWebScript.setAttribute("src", "../lib/SigWebTablet.js");
-            // sigWebScript.onload = callback;
-            // document.head.appendChild(sigWebScript);
+            var callback = this.sigWebLoaded;
+            var sigWebScript = document.createElement("script");
+            sigWebScript.setAttribute("src", "../lib/SigWebTablet.js");
+            sigWebScript.onload = callback;
+            document.head.appendChild(sigWebScript);
           }
           if (
             this.getOwnerComponent().getComponentData().startupParameters.DeliveryNumber &&
