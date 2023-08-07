@@ -4,29 +4,7 @@ var deliveryNumber = " ";
 var customerJSON = {};
 var customerCertRequired = false;
 
-const b64toBlob = (b64Data, contentType, sliceSize) => {
-  contentType = contentType || "";
-  sliceSize = sliceSize || 512;
 
-  var byteCharacters = atob(b64Data);
-  var byteArrays = [];
-
-  for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-    var slice = byteCharacters.slice(offset, offset + sliceSize);
-
-    var byteNumbers = new Array(slice.length);
-    for (var i = 0; i < slice.length; i++) {
-      byteNumbers[i] = slice.charCodeAt(i);
-    }
-
-    var byteArray = new Uint8Array(byteNumbers);
-
-    byteArrays.push(byteArray);
-  }
-
-  var blob = new Blob(byteArrays, { type: contentType });
-  return blob;
-};
 
 
 sap.ui.define(
@@ -71,6 +49,7 @@ sap.ui.define(
           LCDWriteString(0, 2, 20, 375, "20pt Verdana", 27, "Tablet Instanciated");
         },
         displayDeliveryItems: function (delItemsJSON) {
+          ClearTablet();
           KeyPadClearHotSpotList();
           var that = this;
           SetTabletState(1);
@@ -81,7 +60,8 @@ sap.ui.define(
           var totalPages = Math.ceil(Object.keys(delItemsJSON).length / itemsPerPage);
 
           var displayItems = function () {
-
+            LcdRefresh(0, 0, 34, 640, 480);
+          
             var ypos = + 50;
             var xposDelivery = 50;
             var xposQuantity = 425;
@@ -203,6 +183,7 @@ sap.ui.define(
 
         },
         customerCertScreen: function () {
+          ClearTablet();
           SetTabletState(1);
           var that = this;
           KeyPadClearHotSpotList();
@@ -238,6 +219,7 @@ sap.ui.define(
         },
 
         signatureScreen: function () {
+          ClearTablet();
           SetTabletState(1);
           KeyPadClearHotSpotList();
           SetSigWindow(1, 27, 150, 582, 210);
@@ -266,7 +248,32 @@ sap.ui.define(
 
           let acceptFunction = function () {
 
-            let callback = async function (base64image) {
+            window.topazCallBack = async function (base64image) {
+
+              const b64toBlob = (b64Data, contentType, sliceSize) => {
+                contentType = contentType || "";
+                sliceSize = sliceSize || 512;
+              
+                var byteCharacters = atob(b64Data);
+                var byteArrays = [];
+              
+                for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                  var slice = byteCharacters.slice(offset, offset + sliceSize);
+              
+                  var byteNumbers = new Array(slice.length);
+                  for (var i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                  }
+              
+                  var byteArray = new Uint8Array(byteNumbers);
+              
+                  byteArrays.push(byteArray);
+                }
+              
+                var blob = new Blob(byteArrays, { type: contentType });
+                return blob;
+              };
+
               let blobImage = b64toBlob(base64image, 'image/bmp');
               const csrfResponse = await fetch('/sap/opu/odata/sap/ZTOPAZ_SIG_UPLOAD_SRV/', {
                 headers: {
@@ -283,7 +290,7 @@ sap.ui.define(
                   "X-CSRF-Token": csrfResponse.headers.get("X-CSRF-Token")
                 },
                 method: "POST",
-                body: blob,
+                body: blobImage,
               })
                 .then((response) => response.text())
                 .then((data) => {
@@ -302,7 +309,10 @@ sap.ui.define(
               return response;
             }
 
-            GetSigImageB64(callback);
+            SetImageXSize(582);
+            SetImageYSize(210);
+            SetImagePenWidth(5);
+            GetSigImageB64(window.topazCallBack);
           };
           let cancelFunction = function () {
             sap.m.MessageBox.show("Customer has canceled Delivery", {
@@ -425,17 +435,13 @@ sap.ui.define(
 
             let hotspot = KeyPadQueryHotSpot(hotSpotNumber);
             
-            ClearTablet();
+           
             if (KeyPadQueryHotSpot(hotSpotNumber) > 0) {
-
-              
-              ClearTablet();
-              
-              LcdRefresh(0, 0, 34, 640, 480);
+        
               KeyPadClearHotSpotList();
               callback();
             } else {
-               setTimeout(checkHotspots, 5);
+               setTimeout(checkHotspots, 3000);
             }
           }
 
@@ -545,9 +551,7 @@ sap.ui.define(
                 // next function
               }.bind(this)
             )
-            .then(function () { }.bind(this)) // add these to add more functions
-            .then(function () { }.bind(this))
-            .then(function () { }.bind(this))
+            
             .catch(function (err) {
               console.log(err);
               // reject(err); // error handling
