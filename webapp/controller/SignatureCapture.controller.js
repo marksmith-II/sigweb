@@ -29,8 +29,6 @@ const b64toBlob = (b64Data, contentType, sliceSize) => {
 };
 
 
-// var username = "msmith";
-// var password = "G00d@lien1";
 sap.ui.define(
   [
     "sap/ui/core/mvc/Controller",
@@ -65,7 +63,7 @@ sap.ui.define(
         // All the business logic goes here.
 
         startTablet: function () {
-          // SetTabletState(1);
+           SetTabletState(1);
           //   var tabletState = GetTabletState();
           LcdRefresh(0, 0, 0, 640, 480);
 
@@ -75,7 +73,7 @@ sap.ui.define(
         displayDeliveryItems: function (delItemsJSON) {
           KeyPadClearHotSpotList();
           var that = this;
-          //  SetTabletState(1);
+          SetTabletState(1);
           LcdRefresh(0, 0, 0, 640, 480);
           this.deliveryDetailsScreenHeader();
           var itemsPerPage = 5;
@@ -83,11 +81,11 @@ sap.ui.define(
           var totalPages = Math.ceil(Object.keys(delItemsJSON).length / itemsPerPage);
 
           var displayItems = function () {
-            
+
             var ypos = + 50;
             var xposDelivery = 50;
             var xposQuantity = 425;
-          
+
 
             // Loop through items for current page
             var startIndex = (currentPage - 1) * itemsPerPage;
@@ -113,15 +111,10 @@ sap.ui.define(
               that.nextButton();
               currentPage++;
               that.screenButtonListener(3, displayItems);
-              // if (buttonValue.nextClicked) {
-
-
-              // Show "Next" button
-              // }
             } else {
               let acceptFunction = function () {
-                that.isCustomerCertRequired().then(function (isCertRequired) {
-                  if (isCertRequired.length > 0) {
+                that.isCustomerCertRequired(deliveryNumber).then(function (isCertRequired) {
+                  if (isCertRequired ) {
                     // Display Customer Cert screen
                     that.customerCertScreen.bind(that)();
                   } else {
@@ -149,7 +142,7 @@ sap.ui.define(
               that.cancelButton();
               that.screenButtonListener(0, acceptFunction);
               that.screenButtonListener(1, cancelFunction);
-              
+
 
             }
           }
@@ -162,11 +155,9 @@ sap.ui.define(
 
           LCDSendGraphicUrl(0, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/DeliveryDetails.bmp"), document.baseURI).href);
 
-          //  LcdRefresh(0, 0, 0, 640, 480);
         },
         customerCertHeaderImage: function () {
           LcdRefresh(0, 0, 0, 640, 480);
-          // LCDSendGraphicUrl(1, 2, 0, 0, "webapp/images/CustomerCertification.bmp");
           LCDSendGraphicUrl(0, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/CustomerCertification.bmp"), document.baseURI).href);
         },
 
@@ -212,56 +203,75 @@ sap.ui.define(
 
         },
         customerCertScreen: function () {
+          SetTabletState(1);
+          var that = this;
           KeyPadClearHotSpotList();
-          customerCertHeaderImage();
-          displayCustomerCertStatement();
-          acceptButton();
-          cancelButton();
-
-          let acceptClicked = 0;
-          let cancelClicked = 0;
-          // let buttonValue = this.screenButtonListener(acceptClicked, cancelClicked);
-
-          // Handle button value
-          if (buttonValue.acceptClicked) {
-            // Go to signature screen
-            signatureScreen();
-          } else if (buttonValue.cancelClicked) {
-            // Handle cancel click
-
-            sap.m.MessageBox.show("Customer has canceled Delivery", {
-              icon: sap.m.MessageBox.Icon.WARNING,
-              title: "Cancel",
-              actions: [sap.m.MessageBox.Action.OK],
-              onClose: function (oAction) {
-                if (oAction === sap.m.MessageBox.Action.OK) {
-                  LcdRefresh(0, 0, 0, 640, 480);
-                  window.close(); // Close window
-
+          this.customerCertHeaderImage();
+          this.displayCustomerCertStatement();
+          this.acceptButton();
+          this.cancelButton();
+  
+            let acceptFunction = function () {
+               that.signatureScreen.bind(that)();
+               
+              };
+           
+            let cancelFunction = function () {
+              sap.m.MessageBox.show("Customer has canceled Delivery", {
+                icon: sap.m.MessageBox.Icon.WARNING,
+                title: "Cancel",
+                actions: [sap.m.MessageBox.Action.OK],
+                onClose: function (oAction) {
+                  if (oAction === sap.m.MessageBox.Action.OK) {
+                    LcdRefresh(0, 0, 0, 640, 480);
+                    window.close();
+                  }
                 }
-              }
-            });
-          }
+              });
+            };
+            // Show "Accept" and "Cancel" buttons
+            this.acceptButton();
+            this.cancelButton();
+            this.screenButtonListener(0, acceptFunction);
+            this.screenButtonListener(1, cancelFunction);
+
+
+          
         },
+
+
+
         signatureScreen: function () {
+          SetTabletState(1);
           KeyPadClearHotSpotList();
           SetSigWindow(1, 27, 150, 582, 210);
           this.signatureScreenImages();
-          this.acceptButton();
-          this.cancelButton();
-          this.clearButton();
-          //get Delivery Number, PO Number, and Customer Name from backend
 
-   
-          let acceptClicked = 0;
-          let cancelClicked = 0;
-          let clearButtonClicked = 0;
-          // let buttonValue = this.screenButtonListener(acceptClicked, cancelClicked, clearButtonClicked);
 
+        
+          var keys = Object.keys(delPOCustJSON);
+          for (var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            var headerInfo = delPOCustJSON[key];
+            var delivery = headerInfo.DeliveryNumber;
+            var PO = headerInfo.PONumber;
+            var customer = headerInfo.Customer;
+            var deliveryString = "Delivery: " + delivery;
+            var poString = "PO: " + PO;
+            var customerString = "Customer: " + customer;
+          
+            LCDSetPixelDepth(8);
+            //Item Text
+            LCDWriteString(0, 2, 25, 50, "20pt ARIAL", 30, deliveryString);
+            //Quantity Text
+            LCDWriteString(0, 2, 25, 75, "20pt ARIAL", 30, poString);
+            LCDWriteString(0, 2, 25, 100, "20pt ARIAL", 30, customerString);
+            
+          }
 
           let acceptFunction = function () {
 
-            let callback = async function(base64image) {
+            let callback = async function (base64image) {
               let blobImage = b64toBlob(base64image, 'image/bmp');
               const csrfResponse = await fetch('/sap/opu/odata/sap/ZTOPAZ_SIG_UPLOAD_SRV/', {
                 headers: {
@@ -296,7 +306,7 @@ sap.ui.define(
                 });
               return response;
             }
-            
+
             GetSigImageB64(callback);
           };
           let cancelFunction = function () {
@@ -313,10 +323,10 @@ sap.ui.define(
             });
           };
           let clearFunction = function () {
-            
+
             // ClearSigWindow(0);
             this.signatureScreen();
-           
+
           };
           // Show "Accept" and "Cancel" buttons
           this.acceptButton();
@@ -325,34 +335,8 @@ sap.ui.define(
           this.screenButtonListener(0, acceptFunction.bind(this));
           this.screenButtonListener(1, cancelFunction.bind(this));
           this.screenButtonListener(2, clearFunction.bind(this));
-          
 
 
-
-
-
-
-
-
-          // // Handle button value
-          // if (buttonValue.acceptClicked) {
-          //   // Go to signature screen
-          // } else if (buttonValue.cancelClicked) {
-          //   // Handle cancel click
-
-          //   sap.m.MessageBox.show("Customer has canceled Delivery", {
-          //     icon: sap.m.MessageBox.Icon.WARNING,
-          //     title: "Cancel",
-          //     actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
-          //     onClose: function (oAction) {
-          //       if (oAction === sap.m.MessageBox.Action.YES) {
-          //         window.close(); // Close window
-          //       } else if (buttonValue.clearClicked) {
-          //        this.signatureScreen();
-          //       }
-          //     }
-          //   });
-          // }
         },
 
         getPODelNumCustomerName: function (deliveryNumber) {
@@ -370,11 +354,6 @@ sap.ui.define(
             );
             aFilters.push(oDeliveryDocumentNum);
 
-            // var headers = {
-            //   Authorization: "Basic " + btoa(username + ":" + password),
-            //   username: username,
-            //   password: password,
-            // };
 
             oDataModel.read("/" + "DeliveryPOCustomerInfo", {
 
@@ -406,7 +385,7 @@ sap.ui.define(
             let aFilters = [];
             let oDataModel = this.getOwnerComponent().getModel();
 
-            let oFilters =  new Filter({
+            let oFilters = new Filter({
               filters: [
                 new Filter({
                   path: 'DeliveryDocument',
@@ -416,20 +395,14 @@ sap.ui.define(
                 new Filter({
                   path: 'CustomerCertRequired',
                   operator: FilterOperator.EQ,
-                  value1:'X'
+                  value1: 'X'
                 })
-               
+
               ],
               and: true
             });
 
             aFilters.push(oFilters);
-
-            // var headers = {
-            //   Authorization: "Basic " + btoa(username + ":" + password),
-            //   username: username,
-            //   password: password,
-            // };
 
             oDataModel.read("/" + "CustomerCertStatus", {
 
@@ -463,10 +436,10 @@ sap.ui.define(
             let hotspot = KeyPadQueryHotSpot(hotSpotNumber);
             // Check if any hotspots were clicked
             ClearTablet();
-            if (KeyPadQueryHotSpot(hotSpotNumber) > 0 ) {
-              
+            if (KeyPadQueryHotSpot(hotSpotNumber) > 0) {
+
               // ClearSigWindow(1);
-               ClearTablet();
+              ClearTablet();
               // LcdRefresh(1, 0, 0, 640, 480);
               LcdRefresh(0, 0, 34, 640, 480);
               KeyPadClearHotSpotList();
@@ -491,7 +464,7 @@ sap.ui.define(
           oPromise
             .then(
               function () {
-                return this.getDeliveryItems(deliveryNumber) //, username, password
+                return this.getDeliveryItems(deliveryNumber)
                   .then(function (oData) {
                     // Add oData items to delItemsJSON object
                     for (var i = 0; i < oData.results.length; i++) {
@@ -523,7 +496,7 @@ sap.ui.define(
           }
         },
 
-        getDeliveryItems: function (documentNumber, username, password) {
+        getDeliveryItems: function (documentNumber) {
           return new Promise(function (resolve, reject) {
 
             let that = this;
@@ -540,11 +513,6 @@ sap.ui.define(
 
             aFilters.push(oDeliveryDocumentNum);
 
-            // var headers = {
-            //   Authorization: "Basic " + btoa(username + ":" + password),
-            //   // username: username,
-            //   // password: password,
-            // };
 
             let sUrlParam = {
               // $expand: "&$to_customer_cert_status",
@@ -576,13 +544,13 @@ sap.ui.define(
             // sigWebScript.onload = callback;
             // document.head.appendChild(sigWebScript);
           }
-          if(
+          if (
             this.getOwnerComponent().getComponentData().startupParameters.DeliveryNumber &&
             this.getOwnerComponent().getComponentData().startupParameters.DeliveryNumber.length > 0) {
-              deliveryNumber = this.getOwnerComponent().getComponentData().startupParameters.DeliveryNumber[0];
+            deliveryNumber = this.getOwnerComponent().getComponentData().startupParameters.DeliveryNumber[0];
           }
-          this.isCustomerCertRequired();
-          this.getPODelNumCustomerName();
+          this.isCustomerCertRequired(deliveryNumber);
+          this.getPODelNumCustomerName(deliveryNumber);
           let oPromise = new Promise((resolve, reject) => {
             this.startSigProcess();
             resolve(true); // return value replaces true
