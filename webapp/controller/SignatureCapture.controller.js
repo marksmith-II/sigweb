@@ -50,7 +50,7 @@ sap.ui.define(
         },
         displayDeliveryItems: function (delItemsJSON) {
           ClearTablet();
-          KeyPadClearHotSpotList();
+          // KeyPadClearHotSpotList();
           var that = this;
           SetTabletState(1);
           LcdRefresh(0, 0, 0, 640, 480);
@@ -60,7 +60,7 @@ sap.ui.define(
           var totalPages = Math.ceil(Object.keys(delItemsJSON).length / itemsPerPage);
 
           var displayItems = function () {
-            LcdRefresh(0, 0, 34, 640, 480);
+            // LcdRefresh(0, 0, 34, 640, 480);
           
             var ypos = + 50;
             var xposDelivery = 50;
@@ -77,7 +77,7 @@ sap.ui.define(
               var itemQuantity = deliveryDoc.ActualDeliveryQuantity;
               var itemString = "Item: " + Material;
               var quantityString = "Quantity: " + itemQuantity;
-
+              
               LCDSetPixelDepth(8);
               //Item Text
               LCDWriteString(0, 2, xposDelivery, ypos, "20pt ARIAL", 30, itemString);
@@ -90,9 +90,11 @@ sap.ui.define(
             if (currentPage < totalPages) {
               that.nextButton();
               currentPage++;
-              that.screenButtonListener(3, displayItems);
+              that.screenButtonListener(3, displayItems)
+              
             } else {
               let acceptFunction = function () {
+              
                 that.isCustomerCertRequired(deliveryNumber).then(function (isCertRequired) {
                   if (isCertRequired.results.length > 0) {
                     // Display Customer Cert screen
@@ -104,7 +106,9 @@ sap.ui.define(
 
                 })
               };
+              KeyPadClearHotSpotList();
               let cancelFunction = function () {
+               
                 sap.m.MessageBox.show("Customer has canceled Delivery", {
                   icon: sap.m.MessageBox.Icon.WARNING,
                   title: "Cancel",
@@ -118,6 +122,9 @@ sap.ui.define(
                 });
               };
               // Show "Accept" and "Cancel" buttons
+            
+              
+              KeyPadClearHotSpotList();
               that.acceptButton();
               that.cancelButton();
               that.screenButtonListener(0, acceptFunction);
@@ -125,9 +132,12 @@ sap.ui.define(
 
 
             }
+           
           }
+          
           // Display items for page
-          displayItems();
+         displayItems();
+          
         },
         deliveryDetailsScreenHeader: function () {
           LcdRefresh(0, 0, 0, 640, 480);
@@ -151,10 +161,11 @@ sap.ui.define(
         },
 
         acceptButton: function () {
-          // LCDSendGraphicUrl(0, 2, 450, 375, "http://localhost:8080/images/AcceptButton.bmp");
           LCDSendGraphicUrl(0, 2, 450, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/AcceptButton.bmp"), document.baseURI).href);
           KeyPadAddHotSpot(0, 1, 450, 370, 135, 75);
+            
         },
+       
         cancelButton: function () {
           // LCDSendGraphicUrl(0, 2, 50, 375, "http://localhost:8080/images/CancelButton.bmp");
           LCDSendGraphicUrl(0, 2, 50, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/CancelButton.bmp"), document.baseURI).href);
