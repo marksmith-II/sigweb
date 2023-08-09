@@ -230,6 +230,8 @@ sap.ui.define(
         },
 
         signatureScreen: function () {
+          SetImageXSize(250);
+          SetImageYSize(75);
           SetImagePenWidth(10);
           ClearTablet();
           SetTabletState(1);
