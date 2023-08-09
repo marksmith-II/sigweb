@@ -230,6 +230,7 @@ sap.ui.define(
         },
 
         signatureScreen: function () {
+          SetImagePenWidth(10);
           ClearTablet();
           SetTabletState(1);
           KeyPadClearHotSpotList();
