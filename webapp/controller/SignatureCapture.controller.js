@@ -39,15 +39,111 @@ sap.ui.define(
         },
 
         // All the business logic goes here.
+        startSigProcess: function () {
+          let oPromise = new Promise((resolve, reject) => {
+            this.startTablet();
+            resolve(true);
+          });
+
+          oPromise
+            .then(
+              function () {
+                return this.getDeliveryItems(deliveryNumber)
+                  .then(function (oData) {
+
+                    for (var i = 0; i < oData.results.length; i++) {
+                      var item = oData.results[i];
+                      delItemsJSON[item.ID] = item;
+                    }
+                    return delItemsJSON;
+                  })
+                  .catch(function (err) {
+                    console.log(err);
+                  });
+              }.bind(this)
+            )
+            .then(
+              function (delItemsJSON) {
+                this.displayDeliveryItems(delItemsJSON);
+                resolve(true);
+              }.bind(this)
+            )
+            .catch(function (err) {
+              console.log(err);
+
+            });
+
+          function resolve(value) {
+            console.log(value);
+          }
+        },
 
         startTablet: function () {
-           SetTabletState(1);
-          //   var tabletState = GetTabletState();
+          let tmr = null;
+          SetTabletComTest(false);
+          SetTabletState(0, tmr);
+          SetTabletComTest(true);
+          if (tmr == null) {
+            tmr = SetTabletState(1, ctx, 50);
+          }
+          else {
+            SetTabletState(0, tmr);
+            tmr = null;
+            tmr = SetTabletState(1, ctx, 50);
+          }
+          if (GetTabletState() == 0) {
+            //Cannot locate signature pad
+            SetTabletState(0, tmr);
+            SetTabletComTest(false);
+            MessageBox.error("Tablet not connected");
+          }
+          else {
+            //Located signature pad
+            SetTabletComTest(false);
+          }
+          //you are ready to proceed.
+          SetTabletState(1);
           LcdRefresh(0, 0, 0, 640, 480);
-
           LCDSetPixelDepth(8);
-          LCDWriteString(0, 2, 20, 375, "20pt Verdana", 27, "Tablet Instanciated");
+
+
+
+          // LCDWriteString(0, 2, 20, 375, "20pt Verdana", 27, "Tablet Instanciated");
         },
+
+        getDeliveryItems: function (documentNumber) {
+          return new Promise(function (resolve, reject) {
+
+            let that = this;
+            let aFilters = [];
+            let oDataModel = this.getOwnerComponent().getModel();
+
+            let oDeliveryDocumentNum = new Filter(
+              "DeliveryDocument",
+              FilterOperator.EQ,
+              documentNumber
+            );
+
+            aFilters.push(oDeliveryDocumentNum);
+
+            let sUrlParam = {
+
+            };
+            oDataModel.read("/" + "DeliveryItems", {
+
+              filters: aFilters,
+              async: true,
+              success: function (oData) {
+                resolve(oData);
+                console.log(oData);
+              },
+              error: function (err) {
+                return err;
+              },
+            });
+          }.bind(this));
+        },
+
         displayDeliveryItems: function (delItemsJSON) {
           ClearTablet();
           // KeyPadClearHotSpotList();
@@ -60,8 +156,7 @@ sap.ui.define(
           var totalPages = Math.ceil(Object.keys(delItemsJSON).length / itemsPerPage);
 
           var displayItems = function () {
-            // LcdRefresh(0, 0, 34, 640, 480);
-          
+
             var ypos = + 50;
             var xposDelivery = 50;
             var xposQuantity = 425;
@@ -77,13 +172,14 @@ sap.ui.define(
               var itemQuantity = deliveryDoc.ActualDeliveryQuantity;
               var itemString = "Item: " + Material;
               var quantityString = "Quantity: " + itemQuantity;
-              
+
               LCDSetPixelDepth(8);
               //Item Text
               LCDWriteString(0, 2, xposDelivery, ypos, "20pt ARIAL", 30, itemString);
               //Quantity Text
               LCDWriteString(0, 2, xposQuantity, ypos, "20pt ARIAL", 30, quantityString);
               ypos += 50; // increment the y position
+
             }
 
             // Show "Next" button if there are more pages
@@ -91,108 +187,59 @@ sap.ui.define(
               that.nextButton();
               currentPage++;
               that.screenButtonListener(3, displayItems)
-              
+
             } else {
-              let acceptFunction = function () {
-              
-                that.isCustomerCertRequired(deliveryNumber).then(function (isCertRequired) {
-                  if (isCertRequired.results.length > 0) {
-                    // Display Customer Cert screen
-                    that.customerCertScreen.bind(that)();
-                  } else {
-                    // If no, display Signature screen
-                    that.signatureScreen.bind(that)();
-                  }
 
-                })
-              };
-              KeyPadClearHotSpotList();
-              let cancelFunction = function () {
-               
-                sap.m.MessageBox.show("Customer has canceled Delivery", {
-                  icon: sap.m.MessageBox.Icon.WARNING,
-                  title: "Cancel",
-                  actions: [sap.m.MessageBox.Action.OK],
-                  onClose: function (oAction) {
-                    if (oAction === sap.m.MessageBox.Action.OK) {
-                      LcdRefresh(0, 0, 0, 640, 480);
-                      window.close();
+              var promise = new Promise(function (resolve, reject) {
+                KeyPadClearHotSpotList();
+                resolve();
+              });
+
+              promise.then(function () {
+                let acceptFunction = function () {
+                  that.isCustomerCertRequired(deliveryNumber).then(function (isCertRequired) {
+                    if (isCertRequired.results.length > 0) {
+                      // Display Customer Cert screen
+                      that.customerCertScreen.bind(that)();
+                    } else {
+                      // If no, display Signature screen
+                      that.signatureScreen.bind(that)();
                     }
-                  }
-                });
-              };
-              // Show "Accept" and "Cancel" buttons
-            
-              
-              KeyPadClearHotSpotList();
-              that.acceptButton();
-              that.cancelButton();
-              that.screenButtonListener(0, acceptFunction);
-              that.screenButtonListener(1, cancelFunction);
 
+                  })
+                };
 
+                let cancelFunction = function () {
+
+                  sap.m.MessageBox.show("Customer has canceled Delivery", {
+                    icon: sap.m.MessageBox.Icon.WARNING,
+                    title: "Cancel",
+                    actions: [sap.m.MessageBox.Action.OK],
+                    onClose: function (oAction) {
+                      if (oAction === sap.m.MessageBox.Action.OK) {
+                        LcdRefresh(0, 0, 0, 640, 480);
+                        Reset();
+                        window.close();
+                      }
+                    }
+                  });
+                };
+                // Show "Accept" and "Cancel" buttons
+                LcdRefresh(0, 0, 375, 390, 375,);
+                that.acceptButton();
+                that.cancelButton();
+                that.screenButtonListener(0, acceptFunction);
+                that.screenButtonListener(1, cancelFunction);
+              });
             }
-           
+
           }
-          
+
           // Display items for page
-         displayItems();
-          
-        },
-        deliveryDetailsScreenHeader: function () {
-          LcdRefresh(0, 0, 0, 640, 480);
-          LCDSetPixelDepth(8);
-
-          LCDSendGraphicUrl(0, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/DeliveryDetails.bmp"), document.baseURI).href);
-
-        },
-        customerCertHeaderImage: function () {
-          LcdRefresh(0, 0, 0, 640, 480);
-          LCDSendGraphicUrl(0, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/CustomerCertification.bmp"), document.baseURI).href);
-        },
-
-        signatureScreenImages: function () {
-          LcdRefresh(0, 0, 0, 640, 480);
-          // LCDSendGraphicUrl(1, 2, 0, 0, "http://localhost:8080/images/Signature.bmp");
-          LCDSendGraphicUrl(0, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/SignatureHeader.bmp"), document.baseURI).href);
-          // LCDSendGraphicUrl(1, 2, 0, 0, "http://localhost:8080/images/SignatureArea.bmp");
-          LCDSendGraphicUrl(0, 2, 27, 150, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/SignatureArea.bmp"), document.baseURI).href);
+          displayItems();
 
         },
 
-        acceptButton: function () {
-          LCDSendGraphicUrl(0, 2, 450, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/AcceptButton.bmp"), document.baseURI).href);
-          KeyPadAddHotSpot(0, 1, 450, 370, 135, 75);
-            
-        },
-       
-        cancelButton: function () {
-          // LCDSendGraphicUrl(0, 2, 50, 375, "http://localhost:8080/images/CancelButton.bmp");
-          LCDSendGraphicUrl(0, 2, 50, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/CancelButton.bmp"), document.baseURI).href);
-          KeyPadAddHotSpot(1, 1, 45, 375, 135, 75);
-        },
-        clearButton: function () {
-          // LCDSendGraphicUrl(0, 2, 260, 375, "http://localhost:8080/images/ClearButton.bmp");
-          LCDSendGraphicUrl(0, 2, 260, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/ClearButton.bmp"), document.baseURI).href);
-          KeyPadAddHotSpot(2, 1, 260, 375, 135, 75);
-        },
-        nextButton: function () {
-          // LCDSendGraphicUrl(0, 2, 260, 375, "http://localhost:8080/images/Next.bmp");
-          LCDSendGraphicUrl(0, 2, 450, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/Next.bmp"), document.baseURI).href);
-          KeyPadAddHotSpot(3, 1, 450, 370, 135, 75);
-        },
-        displayCustomerCertStatement: function () {
-          let string1 = 'The Customer Signature Certifies the Material';
-          let string2 = 'described herein are being used in construction';
-          let string3 = 'of the improvments for the referenced project';
-
-          LCDSetPixelDepth(8);
-          LCDWriteString(0, 2, 12, 100, "20pt ARIAL", 30, string1);
-          LCDWriteString(0, 2, 12, 150, "20pt ARIAL", 30, string2);
-          LCDWriteString(0, 2, 12, 200, "20pt ARIAL", 30, string3);
-
-
-        },
         customerCertScreen: function () {
           ClearTablet();
           SetTabletState(1);
@@ -202,30 +249,31 @@ sap.ui.define(
           this.displayCustomerCertStatement();
           this.acceptButton();
           this.cancelButton();
-  
-            let acceptFunction = function () {
-               that.signatureScreen.bind(that)();
-               
-              };
-           
-            let cancelFunction = function () {
-              sap.m.MessageBox.show("Customer has canceled Delivery", {
-                icon: sap.m.MessageBox.Icon.WARNING,
-                title: "Cancel",
-                actions: [sap.m.MessageBox.Action.OK],
-                onClose: function (oAction) {
-                  if (oAction === sap.m.MessageBox.Action.OK) {
-                    LcdRefresh(0, 0, 0, 640, 480);
-                    window.close();
-                  }
+
+          let acceptFunction = function () {
+            that.signatureScreen.bind(that)();
+
+          };
+
+          let cancelFunction = function () {
+            sap.m.MessageBox.show("Customer has canceled Delivery", {
+              icon: sap.m.MessageBox.Icon.WARNING,
+              title: "Cancel",
+              actions: [sap.m.MessageBox.Action.OK],
+              onClose: function (oAction) {
+                if (oAction === sap.m.MessageBox.Action.OK) {
+                  LcdRefresh(0, 0, 0, 640, 480);
+                  Reset();
+                  window.close();
                 }
-              });
-            };
-            
-            this.acceptButton();
-            this.cancelButton();
-            this.screenButtonListener(0, acceptFunction);
-            this.screenButtonListener(1, cancelFunction);
+              }
+            });
+          };
+
+          this.acceptButton();
+          this.cancelButton();
+          this.screenButtonListener(0, acceptFunction);
+          this.screenButtonListener(1, cancelFunction);
 
         },
 
@@ -239,7 +287,7 @@ sap.ui.define(
           SetSigWindow(1, 27, 150, 582, 210);
           this.signatureScreenImages();
 
-        
+
           var keys = Object.keys(delPOCustJSON);
           for (var i = 0; i < keys.length; i++) {
             var key = keys[i];
@@ -250,14 +298,14 @@ sap.ui.define(
             var deliveryString = "Delivery: " + delivery;
             var poString = "PO: " + PO;
             var customerString = "Customer: " + customer;
-          
+
             LCDSetPixelDepth(8);
             //Item Text
             LCDWriteString(0, 2, 25, 50, "20pt ARIAL", 30, deliveryString);
             //Quantity Text
             LCDWriteString(0, 2, 25, 75, "20pt ARIAL", 30, poString);
             LCDWriteString(0, 2, 25, 100, "20pt ARIAL", 30, customerString);
-            
+
           }
 
           let acceptFunction = function () {
@@ -267,23 +315,20 @@ sap.ui.define(
               const b64toBlob = (b64Data, contentType, sliceSize) => {
                 contentType = contentType || "";
                 sliceSize = sliceSize || 512;
-              
+
                 var byteCharacters = atob(b64Data);
                 var byteArrays = [];
-              
+
                 for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
                   var slice = byteCharacters.slice(offset, offset + sliceSize);
-              
                   var byteNumbers = new Array(slice.length);
                   for (var i = 0; i < slice.length; i++) {
                     byteNumbers[i] = slice.charCodeAt(i);
                   }
-              
                   var byteArray = new Uint8Array(byteNumbers);
-              
                   byteArrays.push(byteArray);
                 }
-              
+
                 var blob = new Blob(byteArrays, { type: contentType });
                 return blob;
               };
@@ -336,6 +381,7 @@ sap.ui.define(
               onClose: function (oAction) {
                 if (oAction === sap.m.MessageBox.Action.OK) {
                   LcdRefresh(0, 0, 0, 640, 480);
+                  Reset();
                   window.close();
                 }
               }
@@ -354,7 +400,6 @@ sap.ui.define(
           this.screenButtonListener(0, acceptFunction.bind(this));
           this.screenButtonListener(1, cancelFunction.bind(this));
           this.screenButtonListener(2, clearFunction.bind(this));
-
 
         },
 
@@ -381,12 +426,12 @@ sap.ui.define(
               success: function (oData) {
                 resolve(oData);
                 console.log(oData);
-                
+
                 for (var i = 0; i < oData.results.length; i++) {
                   var item = oData.results[i];
                   delPOCustJSON[item.ID] = item;
                 }
-                resolve(true); 
+                resolve(true);
               },
               error: function (err) {
                 return err;
@@ -428,12 +473,12 @@ sap.ui.define(
               success: function (oData) {
                 resolve(oData);
                 console.log(oData);
-                  for (var i = 0; i < oData.results.length; i++) {
+                for (var i = 0; i < oData.results.length; i++) {
                   var item = oData.results[i];
                   customerJSON[item.ID] = item;
                 }
-                
-                resolve(true); 
+
+                resolve(true);
               },
               error: function (err) {
                 return err;
@@ -448,14 +493,14 @@ sap.ui.define(
           function checkHotspots() {
 
             let hotspot = KeyPadQueryHotSpot(hotSpotNumber);
-            
-           
+
+
             if (KeyPadQueryHotSpot(hotSpotNumber) > 0) {
-        
+
               KeyPadClearHotSpotList();
               callback();
             } else {
-               setTimeout(checkHotspots, 3000);
+              setTimeout(checkHotspots, 3000);
             }
           }
 
@@ -463,80 +508,53 @@ sap.ui.define(
           checkHotspots();
 
         },
+        deliveryDetailsScreenHeader: function () {
+          LcdRefresh(0, 0, 0, 640, 480);
+          LCDSetPixelDepth(8);
 
-        startSigProcess: function () {
-          let oPromise = new Promise((resolve, reject) => {
-            this.startTablet();
-            resolve(true); 
-          });
-
-          oPromise
-            .then(
-              function () {
-                return this.getDeliveryItems(deliveryNumber)
-                  .then(function (oData) {
-                 
-                    for (var i = 0; i < oData.results.length; i++) {
-                      var item = oData.results[i];
-                      delItemsJSON[item.ID] = item;
-                    }
-                    return delItemsJSON;
-                  })
-                  .catch(function (err) {
-                    console.log(err);
-                  });
-              }.bind(this)
-            )
-            .then(
-              function (delItemsJSON) {
-                this.displayDeliveryItems(delItemsJSON);
-                resolve(true); 
-              }.bind(this)
-            )
-            .catch(function (err) {
-              console.log(err);
-            
-            });
-
-          function resolve(value) {
-            console.log(value);
-          }
+          LCDSendGraphicUrl(0, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/DeliveryDetails.bmp"), document.baseURI).href);
         },
+        customerCertHeaderImage: function () {
+          LcdRefresh(0, 0, 0, 640, 480);
+          LCDSendGraphicUrl(0, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/CustomerCertification.bmp"), document.baseURI).href);
+        },
+        signatureScreenImages: function () {
+          LcdRefresh(0, 0, 0, 640, 480);
+          // LCDSendGraphicUrl(1, 2, 0, 0, "http://localhost:8080/images/Signature.bmp");
+          LCDSendGraphicUrl(0, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/SignatureHeader.bmp"), document.baseURI).href);
+          // LCDSendGraphicUrl(1, 2, 0, 0, "http://localhost:8080/images/SignatureArea.bmp");
+          LCDSendGraphicUrl(0, 2, 27, 150, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/SignatureArea.bmp"), document.baseURI).href);
+        },
+        acceptButton: function () {
+          LCDSendGraphicUrl(0, 2, 450, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/AcceptButton.bmp"), document.baseURI).href);
+          KeyPadAddHotSpot(0, 1, 450, 370, 135, 75);
 
-        getDeliveryItems: function (documentNumber) {
-          return new Promise(function (resolve, reject) {
+        },
+        cancelButton: function () {
+          // LCDSendGraphicUrl(0, 2, 50, 375, "http://localhost:8080/images/CancelButton.bmp");
+          LCDSendGraphicUrl(0, 2, 50, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/CancelButton.bmp"), document.baseURI).href);
+          KeyPadAddHotSpot(1, 1, 45, 375, 135, 75);
+        },
+        clearButton: function () {
+          // LCDSendGraphicUrl(0, 2, 260, 375, "http://localhost:8080/images/ClearButton.bmp");
+          LCDSendGraphicUrl(0, 2, 260, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/ClearButton.bmp"), document.baseURI).href);
+          KeyPadAddHotSpot(2, 1, 260, 375, 135, 75);
+        },
+        nextButton: function () {
+          // LCDSendGraphicUrl(0, 2, 260, 375, "http://localhost:8080/images/Next.bmp");
+          LCDSendGraphicUrl(0, 2, 260, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/Next.bmp"), document.baseURI).href);
+          KeyPadAddHotSpot(3, 1, 260, 375, 135, 75);
+        },
+        displayCustomerCertStatement: function () {
+          let string1 = 'The Customer Signature Certifies the Material';
+          let string2 = 'described herein are being used in construction';
+          let string3 = 'of the improvments for the referenced project';
 
-            let that = this;
-            let aFilters = [];
-            let oDataModel = this.getOwnerComponent().getModel();
+          LCDSetPixelDepth(8);
+          LCDWriteString(0, 2, 12, 100, "20pt ARIAL", 30, string1);
+          LCDWriteString(0, 2, 12, 150, "20pt ARIAL", 30, string2);
+          LCDWriteString(0, 2, 12, 200, "20pt ARIAL", 30, string3);
 
-
-
-            let oDeliveryDocumentNum = new Filter(
-              "DeliveryDocument",
-              FilterOperator.EQ,
-              documentNumber
-            );
-
-            aFilters.push(oDeliveryDocumentNum);
-
-
-            let sUrlParam = {
-
-            };
-            oDataModel.read("/" + "DeliveryItems", {
-
-              filters: aFilters,
-              async: true,
-              success: function (oData) {
-                resolve(oData);
-                console.log(oData);
-              },
-              error: function (err) {
-                return err;
-              },
-            });
-          }.bind(this));
         },
 
         onInit: function () {
@@ -557,15 +575,14 @@ sap.ui.define(
           this.getPODelNumCustomerName(deliveryNumber);
           let oPromise = new Promise((resolve, reject) => {
             this.startSigProcess();
-            resolve(true); // return value replaces true
+            resolve(true);
           });
           oPromise
             .then(
               function () {
-                // next function
               }.bind(this)
             )
-            
+
             .catch(function (err) {
               console.log(err);
               // reject(err); // error handling
