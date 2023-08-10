@@ -333,7 +333,7 @@ sap.ui.define(
                 return blob;
               };
 
-              let blobImage = b64toBlob(base64image, 'image/bmp');
+              let blobImage = b64toBlob(base64image, 'image/png');
               const csrfResponse = await fetch('/sap/opu/odata/sap/ZTOPAZ_SIG_UPLOAD_SRV/', {
                 headers: {
                   "X-CSRF-Token": "Fetch"
@@ -343,8 +343,8 @@ sap.ui.define(
 
               const response = await fetch('/sap/opu/odata/sap/ZTOPAZ_SIG_UPLOAD_SRV/DeliveryDocumentSet', {
                 headers: {
-                  slug: deliveryNumber + '.bmp',
-                  "Content-Type": 'image/bmp',
+                  slug: deliveryNumber + '.png',
+                  "Content-Type": 'image/png',
                   "DocumentNumber": deliveryNumber,
                   "X-CSRF-Token": csrfResponse.headers.get("X-CSRF-Token")
                 },
