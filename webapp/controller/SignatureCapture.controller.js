@@ -158,7 +158,7 @@ sap.ui.define(
           var displayItems = function () {
 
             var ypos = + 50;
-            var xposDelivery = 50;
+            var xposDelivery = 10;
             var xposQuantity = 425;
 
 
@@ -170,7 +170,7 @@ sap.ui.define(
               var deliveryDoc = delItemsJSON[key];
               var Material = deliveryDoc.Material;
               var itemQuantity = deliveryDoc.ActualDeliveryQuantity;
-              var itemString = "Item: " + Material;
+              var itemString = " " + Material;
               var quantityString = "Quantity: " + itemQuantity;
 
               LCDSetPixelDepth(8);
