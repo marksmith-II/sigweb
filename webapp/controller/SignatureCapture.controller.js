@@ -309,7 +309,11 @@ sap.ui.define(
           }
 
           let acceptFunction = function () {
+         // check if signature is present before sending to BE
+         var signature = GetSigString();
 
+         if (signature > 0) {
+        
             window.topazCallBack = async function (base64image) {
 
               const b64toBlob = (b64Data, contentType, sliceSize) => {
@@ -372,6 +376,9 @@ sap.ui.define(
             SetImageYSize(210);
             SetImagePenWidth(5);
             GetSigImageB64(window.topazCallBack);
+          }else {
+            this.signatureScreen();
+          }
           };
           let cancelFunction = function () {
             sap.m.MessageBox.show("Customer has canceled Delivery", {

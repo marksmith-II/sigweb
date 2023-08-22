@@ -31,7 +31,7 @@ server:
         ignoreCertError: true # If set to true, certificate errors will be ignored. E.g. self-signed certificates will be accepted
         backend:
           - path: /sap 
-            url: https://s4hana2020.mindsetconsulting.com:44300
+            url: https://s4hana2022.mindsetconsulting.com:44300
             
          
     - name: sap-fe-mockserver
