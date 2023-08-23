@@ -578,7 +578,10 @@ sap.ui.define(
             this.getOwnerComponent().getComponentData().startupParameters.DeliveryNumber &&
             this.getOwnerComponent().getComponentData().startupParameters.DeliveryNumber.length > 0) {
             deliveryNumber = this.getOwnerComponent().getComponentData().startupParameters.DeliveryNumber[0];
-          }else { deliveryNumber = urlParams.get('DeliveryNumber');}
+          }else { 
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            deliveryNumber = urlParams.get('DeliveryNumber');}
           this.isCustomerCertRequired(deliveryNumber);
           this.getPODelNumCustomerName(deliveryNumber);
           let oPromise = new Promise((resolve, reject) => {
