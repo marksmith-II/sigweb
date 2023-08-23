@@ -574,10 +574,11 @@ sap.ui.define(
             document.head.appendChild(sigWebScript);
           }
           if (
+            this.getOwnerComponent().getComponentData() && 
             this.getOwnerComponent().getComponentData().startupParameters.DeliveryNumber &&
             this.getOwnerComponent().getComponentData().startupParameters.DeliveryNumber.length > 0) {
             deliveryNumber = this.getOwnerComponent().getComponentData().startupParameters.DeliveryNumber[0];
-          }
+          }else { deliveryNumber = urlParams.get('DeliveryNumber');}
           this.isCustomerCertRequired(deliveryNumber);
           this.getPODelNumCustomerName(deliveryNumber);
           let oPromise = new Promise((resolve, reject) => {
