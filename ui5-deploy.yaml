@@ -26,3 +26,5 @@ builder:
           password: env:FIORI_TOOLS_PASSWORD
         exclude:
           - /test/
+          - /lib/SigWebTablet-dbg.js
+          - /lib/SigWebTablet.js.map

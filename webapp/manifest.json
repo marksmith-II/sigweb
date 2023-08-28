@@ -81,6 +81,11 @@
         {
           "uri": "css/style.css"
         }
+      ],
+      "js": [
+        {
+          "url": "lib/SigWebTablet.js"
+        }
       ]
     },
     "routing": {
