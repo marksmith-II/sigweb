@@ -18,7 +18,7 @@ builder:
           url: https://s4hana2022.mindsetconsulting.com:44301
           client: "100"
         app:
-          name: ZBS_TOPAZ4
+          name: ZBS_TOPAZ_SIG
           description: ""
           package: $TMP
         credentials:
@@ -26,5 +26,3 @@ builder:
           password: env:FIORI_TOOLS_PASSWORD
         exclude:
           - /test/
-          - /lib/SigWebTablet-dbg.js
-          - /lib/SigWebTablet.js.map
