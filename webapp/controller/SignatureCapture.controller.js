@@ -527,9 +527,9 @@ sap.ui.define(
         },
         signatureScreenImages: function () {
           LcdRefresh(0, 0, 0, 640, 480);
-          // LCDSendGraphicUrl(1, 2, 0, 0, "http://localhost:8080/images/Signature.bmp");
+          
           LCDSendGraphicUrl(0, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/SignatureHeader.bmp"), document.baseURI).href);
-          // LCDSendGraphicUrl(1, 2, 0, 0, "http://localhost:8080/images/SignatureArea.bmp");
+          
           LCDSendGraphicUrl(0, 2, 27, 150, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/SignatureArea.bmp"), document.baseURI).href);
         },
         acceptButton: function () {
@@ -538,17 +538,17 @@ sap.ui.define(
 
         },
         cancelButton: function () {
-          // LCDSendGraphicUrl(0, 2, 50, 375, "http://localhost:8080/images/CancelButton.bmp");
+          
           LCDSendGraphicUrl(0, 2, 50, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/CancelButton.bmp"), document.baseURI).href);
           KeyPadAddHotSpot(1, 1, 45, 375, 135, 75);
         },
         clearButton: function () {
-          // LCDSendGraphicUrl(0, 2, 260, 375, "http://localhost:8080/images/ClearButton.bmp");
+          
           LCDSendGraphicUrl(0, 2, 260, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/ClearButton.bmp"), document.baseURI).href);
           KeyPadAddHotSpot(2, 1, 260, 375, 135, 75);
         },
         nextButton: function () {
-          // LCDSendGraphicUrl(0, 2, 260, 375, "http://localhost:8080/images/Next.bmp");
+          
           LCDSendGraphicUrl(0, 2, 260, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/Next.bmp"), document.baseURI).href);
           KeyPadAddHotSpot(3, 1, 260, 375, 135, 75);
         },
@@ -565,14 +565,15 @@ sap.ui.define(
         },
 
         onInit: function () {
-          if (!document.IsSigWebInstalled) {
-            // Do something here to check if SigWeb is installed
-            var callback = this.sigWebLoaded;
-            var sigWebScript = document.createElement("script");
-            sigWebScript.setAttribute("src", "../lib/SigWebTablet.js");
-            sigWebScript.onload = callback;
-            document.head.appendChild(sigWebScript);
-          }
+          // if (!document.IsSigWebInstalled) {
+          //   // Do something here to check if SigWeb is installed
+          //   var callback = this.sigWebLoaded;
+          //   var sigWebScript = document.createElement("script");
+          //   sigWebScript.setAttribute("src", "../lib/SigWebTablet.js");
+          //   sigWebScript.onload = callback;
+          //   document.head.appendChild(sigWebScript);
+          // }
+          this.sigWebLoaded();
           if (
             this.getOwnerComponent().getComponentData() && 
             this.getOwnerComponent().getComponentData().startupParameters.DeliveryNumber &&
