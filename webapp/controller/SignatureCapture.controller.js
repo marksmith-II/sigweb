@@ -12,8 +12,7 @@ sap.ui.define(
     "sap/ui/core/mvc/Controller",
     "sap/m/MessageBox",
     "sap/ui/model/Filter",
-    "sap/ui/model/FilterOperator",
-    "com/borderstates/topazsignature/lib/SigWebTablet",
+    "sap/ui/model/FilterOperator"
   ],
 
   /**
@@ -565,14 +564,6 @@ sap.ui.define(
         },
 
         onInit: function () {
-          // if (!document.IsSigWebInstalled) {
-          //   // Do something here to check if SigWeb is installed
-          //   var callback = this.sigWebLoaded;
-          //   var sigWebScript = document.createElement("script");
-          //   sigWebScript.setAttribute("src", "../lib/SigWebTablet.js");
-          //   sigWebScript.onload = callback;
-          //   document.head.appendChild(sigWebScript);
-          // }
           this.sigWebLoaded();
           if (
             this.getOwnerComponent().getComponentData() && 
