@@ -12,7 +12,8 @@ sap.ui.define(
     "sap/ui/core/mvc/Controller",
     "sap/m/MessageBox",
     "sap/ui/model/Filter",
-    "sap/ui/model/FilterOperator"
+    "sap/ui/model/FilterOperator",
+    "com/borderstates/topazsignature/lib/SigWebTablet"
   ],
 
   /**
