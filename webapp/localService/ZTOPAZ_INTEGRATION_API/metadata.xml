@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData">
+    <edmx:Reference Uri="https://S4HANA2020.MINDSETCONSULTING.COM:44300/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMON',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="com.sap.vocabularies.Common.v1" Alias="Common"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://S4HANA2020.MINDSETCONSULTING.COM:44300/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_CAPABILITIES',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="Org.OData.Capabilities.V1" Alias="Capabilities"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://S4HANA2020.MINDSETCONSULTING.COM:44300/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_COMMUNICATION',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="com.sap.vocabularies.Communication.v1" Alias="Communication"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://S4HANA2020.MINDSETCONSULTING.COM:44300/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_AGGREGATION',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="Org.OData.Aggregation.V1" Alias="Aggregation"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://S4HANA2020.MINDSETCONSULTING.COM:44300/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_PERSONALDATA',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="com.sap.vocabularies.PersonalData.v1" Alias="PersonalData"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://S4HANA2020.MINDSETCONSULTING.COM:44300/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_VALIDATION',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="Org.OData.Validation.V1" Alias="Validation"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://S4HANA2020.MINDSETCONSULTING.COM:44300/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_ANALYTICS',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="com.sap.vocabularies.Analytics.v1" Alias="Analytics"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://S4HANA2020.MINDSETCONSULTING.COM:44300/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_MEASURES',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="Org.OData.Measures.V1" Alias="Measures"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://S4HANA2020.MINDSETCONSULTING.COM:44300/sap/opu/odata/IWFND/CATALOGSERVICE;v=2/Vocabularies(TechnicalName='%2FIWBEP%2FVOC_UI',Version='0001',SAP__Origin='')/$value" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Namespace="com.sap.vocabularies.UI.v1" Alias="UI"/>
+    </edmx:Reference>
+    <edmx:DataServices m:DataServiceVersion="2.0">
+        <Schema Namespace="cds_ztopaz_integration_def" xml:lang="en" sap:schema-version="1" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+            <EntityType Name="CustomerCertStatusType" sap:label="Customer Disclaimer status" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="Customer"/>
+                    <PropertyRef Name="Rid"/>
+                    <PropertyRef Name="DeliveryDocument"/>
+                    <PropertyRef Name="Item"/>
+                </Key>
+                <Property Name="Customer" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="Customer" sap:quickinfo="Customer Number"/>
+                <Property Name="Rid" Type="Edm.Guid" Nullable="false" sap:label="DocRelationshipUUID" sap:quickinfo="SD Unique Document Relationship Identification"/>
+                <Property Name="DeliveryDocument" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="Subsequent Document" sap:quickinfo="Subsequent Sales and Distribution Document"/>
+                <Property Name="Item" Type="Edm.String" Nullable="false" MaxLength="6" sap:display-format="NonNegative" sap:label="Item (SD)" sap:quickinfo="Item number of the SD document"/>
+                <Property Name="CustomerCertRequired" Type="Edm.String" MaxLength="1" sap:display-format="UpperCase" sap:label="Character Length 1" sap:quickinfo="Character Field of Length 1"/>
+            </EntityType>
+            <EntityType Name="DeliveryItemsType" sap:semantics="aggregate" sap:label="Delivery Items" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.String" Nullable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="DeliveryDocument" Type="Edm.String" MaxLength="10" sap:aggregation-role="dimension" sap:display-format="UpperCase" sap:label="Delivery"/>
+                <Property Name="DeliveryDocumentItem" Type="Edm.String" MaxLength="6" sap:aggregation-role="dimension" sap:display-format="NonNegative" sap:label="Item" sap:quickinfo="Delivery Item"/>
+                <Property Name="Material" Type="Edm.String" MaxLength="18" sap:aggregation-role="dimension" sap:display-format="UpperCase" sap:label="Material" sap:quickinfo="Material Number"/>
+                <Property Name="ActualDeliveryQuantity" Type="Edm.Decimal" Precision="13" Scale="3" sap:aggregation-role="measure" sap:unit="DeliveryQuantityUnit" sap:label="Delivery Quantity" sap:quickinfo="Actual quantity delivered (in sales units)" sap:filterable="false"/>
+                <Property Name="DeliveryQuantityUnit" Type="Edm.String" MaxLength="3" sap:aggregation-role="dimension" sap:label="Sales unit" sap:semantics="unit-of-measure"/>
+                <NavigationProperty Name="to_customer_cert_status" Relationship="cds_ztopaz_integration_def.assoc_262BA79B11983D769BEAA2EF66B0EB4E" FromRole="FromRole_assoc_262BA79B11983D769BEAA2EF66B0EB4E" ToRole="ToRole_assoc_262BA79B11983D769BEAA2EF66B0EB4E"/>
+                <NavigationProperty Name="to_deliveryPOCustomerInfo" Relationship="cds_ztopaz_integration_def.assoc_61AA6A8FF795F1FE25241886E2FE3557" FromRole="FromRole_assoc_61AA6A8FF795F1FE25241886E2FE3557" ToRole="ToRole_assoc_61AA6A8FF795F1FE25241886E2FE3557"/>
+            </EntityType>
+            <EntityType Name="DeliveryPOCustomerInfoType" sap:label="Delivery, PO &amp; Customer Information" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="DeliveryNumber"/>
+                </Key>
+                <Property Name="DeliveryNumber" Type="Edm.String" Nullable="false" MaxLength="10" sap:display-format="UpperCase" sap:label="Delivery"/>
+                <Property Name="SalesOrder" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Reference document" sap:quickinfo="Document number of the reference document"/>
+                <Property Name="PONumber" Type="Edm.String" MaxLength="20" sap:label="Customer Reference"/>
+                <Property Name="CustomerNumber" Type="Edm.String" MaxLength="10" sap:display-format="UpperCase" sap:label="Sold-To Party"/>
+                <Property Name="Customer" Type="Edm.String" MaxLength="80" sap:label="Name of Customer"/>
+            </EntityType>
+            <Association Name="assoc_61AA6A8FF795F1FE25241886E2FE3557" sap:content-version="1">
+                <End Type="cds_ztopaz_integration_def.DeliveryItemsType" Multiplicity="1" Role="FromRole_assoc_61AA6A8FF795F1FE25241886E2FE3557"/>
+                <End Type="cds_ztopaz_integration_def.DeliveryPOCustomerInfoType" Multiplicity="1" Role="ToRole_assoc_61AA6A8FF795F1FE25241886E2FE3557"/>
+            </Association>
+            <Association Name="assoc_262BA79B11983D769BEAA2EF66B0EB4E" sap:content-version="1">
+                <End Type="cds_ztopaz_integration_def.DeliveryItemsType" Multiplicity="1" Role="FromRole_assoc_262BA79B11983D769BEAA2EF66B0EB4E"/>
+                <End Type="cds_ztopaz_integration_def.CustomerCertStatusType" Multiplicity="1" Role="ToRole_assoc_262BA79B11983D769BEAA2EF66B0EB4E"/>
+            </Association>
+            <EntityContainer Name="cds_ztopaz_integration_def_Entities" m:IsDefaultEntityContainer="true" sap:message-scope-supported="true" sap:supported-formats="atom json xlsx">
+                <EntitySet Name="CustomerCertStatus" EntityType="cds_ztopaz_integration_def.CustomerCertStatusType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
+                <EntitySet Name="DeliveryItems" EntityType="cds_ztopaz_integration_def.DeliveryItemsType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
+                <EntitySet Name="DeliveryPOCustomerInfo" EntityType="cds_ztopaz_integration_def.DeliveryPOCustomerInfoType" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
+                <AssociationSet Name="assoc_61AA6A8FF795F1FE25241886E2FE3557" Association="cds_ztopaz_integration_def.assoc_61AA6A8FF795F1FE25241886E2FE3557" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
+                    <End EntitySet="DeliveryItems" Role="FromRole_assoc_61AA6A8FF795F1FE25241886E2FE3557"/>
+                    <End EntitySet="DeliveryPOCustomerInfo" Role="ToRole_assoc_61AA6A8FF795F1FE25241886E2FE3557"/>
+                </AssociationSet>
+                <AssociationSet Name="assoc_262BA79B11983D769BEAA2EF66B0EB4E" Association="cds_ztopaz_integration_def.assoc_262BA79B11983D769BEAA2EF66B0EB4E" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
+                    <End EntitySet="DeliveryItems" Role="FromRole_assoc_262BA79B11983D769BEAA2EF66B0EB4E"/>
+                    <End EntitySet="CustomerCertStatus" Role="ToRole_assoc_262BA79B11983D769BEAA2EF66B0EB4E"/>
+                </AssociationSet>
+            </EntityContainer>
+            <Annotations Target="cds_ztopaz_integration_def.cds_ztopaz_integration_def_Entities" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.ApplyMultiUnitBehaviorForSortingAndFiltering" Bool="true"/>
+                <Annotation Term="Aggregation.ApplySupported">
+                    <Record>
+                        <PropertyValue Property="Transformations">
+                            <Collection>
+                                <String>aggregate</String>
+                                <String>groupby</String>
+                                <String>filter</String>
+                            </Collection>
+                        </PropertyValue>
+                        <PropertyValue Property="Rollup" EnumMember="None"/>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="cds_ztopaz_integration_def.cds_ztopaz_integration_def_Entities/DeliveryItems" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Capabilities.FilterRestrictions">
+                    <Record>
+                        <PropertyValue Property="NonFilterableProperties">
+                            <Collection>
+                                <PropertyPath>ID</PropertyPath>
+                                <PropertyPath>ActualDeliveryQuantity</PropertyPath>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.SortRestrictions">
+                    <Record>
+                        <PropertyValue Property="NonSortableProperties">
+                            <Collection>
+                                <PropertyPath>ID</PropertyPath>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="cds_ztopaz_integration_def.DeliveryItemsType/ActualDeliveryQuantity" xmlns="http://docs.oasis-open.org/odata/ns/edm"/>
+            <atom:link rel="self" href="https://S4HANA2020.MINDSETCONSULTING.COM:44300/sap/opu/odata/sap/ZTOPAZ_INTEGRATION_API/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
+            <atom:link rel="latest-version" href="https://S4HANA2020.MINDSETCONSULTING.COM:44300/sap/opu/odata/sap/ZTOPAZ_INTEGRATION_API/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>

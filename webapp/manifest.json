@@ -17,12 +17,10 @@
     },
     "dataSources": {
       "mainService": {
-        "uri": "/here/goes/your/serviceurl/",
+        "uri": "/sap/opu/odata/sap/ZTOPAZ_INTEGRATION_API/",
         "type": "OData",
         "settings": {
-          "annotations": [],
-          "localUri": "localService/metadata.xml",
-          "odataVersion": "2.0"
+          "localUri": "/localService/ZTOPAZ_INTEGRATION_API/metadata.xml "
         }
       }
     }
@@ -44,6 +42,9 @@
     }
   },
   "sap.ui5": {
+    "config": {
+      "sapFiori2Adaptation": true
+    },
     "flexEnabled": true,
     "dependencies": {
       "minUI5Version": "1.112.1",
@@ -71,8 +72,7 @@
       },
       "": {
         "dataSource": "mainService",
-        "preload": true,
-        "settings": {}
+        "preload" : true
       }
     },
     "resources": {
@@ -96,9 +96,7 @@
         {
           "name": "RouteSignatureCapture",
           "pattern": ":?query:",
-          "target": [
-            "TargetSignatureCapture"
-          ]
+          "target": ["TargetSignatureCapture"]
         }
       ],
       "targets": {
