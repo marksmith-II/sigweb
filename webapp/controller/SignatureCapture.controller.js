@@ -519,37 +519,37 @@ sap.ui.define(
           LcdRefresh(0, 0, 0, 640, 480);
           LCDSetPixelDepth(8);
 
-          LCDSendGraphicUrl(0, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/DeliveryDetails.bmp"), document.baseURI).href);
+          LCDSendGraphicUrl(0, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/public/images/DeliveryDetails.bmp"), document.baseURI).href);
         },
         customerCertHeaderImage: function () {
           LcdRefresh(0, 0, 0, 640, 480);
-          LCDSendGraphicUrl(0, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/CustomerCertification.bmp"), document.baseURI).href);
+          LCDSendGraphicUrl(0, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/public/images/CustomerCertification.bmp"), document.baseURI).href);
         },
         signatureScreenImages: function () {
           LcdRefresh(0, 0, 0, 640, 480);
           
-          LCDSendGraphicUrl(0, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/SignatureHeader.bmp"), document.baseURI).href);
+          LCDSendGraphicUrl(0, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/public/images/SignatureHeader.bmp"), document.baseURI).href);
           
-          LCDSendGraphicUrl(0, 2, 27, 150, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/SignatureArea.bmp"), document.baseURI).href);
+          LCDSendGraphicUrl(0, 2, 27, 150, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/public/images/SignatureArea.bmp"), document.baseURI).href);
         },
         acceptButton: function () {
-          LCDSendGraphicUrl(0, 2, 450, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/AcceptButton.bmp"), document.baseURI).href);
+          LCDSendGraphicUrl(0, 2, 450, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/public/images/AcceptButton.bmp"), document.baseURI).href);
           KeyPadAddHotSpot(0, 1, 450, 370, 135, 75);
 
         },
         cancelButton: function () {
           
-          LCDSendGraphicUrl(0, 2, 50, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/CancelButton.bmp"), document.baseURI).href);
+          LCDSendGraphicUrl(0, 2, 50, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/public/images/CancelButton.bmp"), document.baseURI).href);
           KeyPadAddHotSpot(1, 1, 45, 375, 135, 75);
         },
         clearButton: function () {
           
-          LCDSendGraphicUrl(0, 2, 260, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/ClearButton.bmp"), document.baseURI).href);
+          LCDSendGraphicUrl(0, 2, 260, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/public/images/ClearButton.bmp"), document.baseURI).href);
           KeyPadAddHotSpot(2, 1, 260, 375, 135, 75);
         },
         nextButton: function () {
           
-          LCDSendGraphicUrl(0, 2, 260, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/images/Next.bmp"), document.baseURI).href);
+          LCDSendGraphicUrl(0, 2, 260, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/public/images/Next.bmp"), document.baseURI).href);
           KeyPadAddHotSpot(3, 1, 260, 375, 135, 75);
         },
         displayCustomerCertStatement: function () {
