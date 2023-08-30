@@ -211,7 +211,7 @@ sap.ui.define(
 
                 let cancelFunction = function () {
 
-                  sap.m.MessageBox.show("Customer has cancelled Delivery", {
+                  sap.m.MessageBox.show("Customer has canceled Delivery", {
                     icon: sap.m.MessageBox.Icon.WARNING,
                     title: "Cancel",
                     actions: [sap.m.MessageBox.Action.OK],
@@ -256,7 +256,7 @@ sap.ui.define(
           };
 
           let cancelFunction = function () {
-            sap.m.MessageBox.show("Customer has cancelled Delivery", {
+            sap.m.MessageBox.show("Customer has canceled Delivery", {
               icon: sap.m.MessageBox.Icon.WARNING,
               title: "Cancel",
               actions: [sap.m.MessageBox.Action.OK],
@@ -381,7 +381,7 @@ sap.ui.define(
           }
           };
           let cancelFunction = function () {
-            sap.m.MessageBox.show("Customer has cancelled Delivery", {
+            sap.m.MessageBox.show("Customer has canceled Delivery", {
               icon: sap.m.MessageBox.Icon.WARNING,
               title: "Cancel",
               actions: [sap.m.MessageBox.Action.OK],
