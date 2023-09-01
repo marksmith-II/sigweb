@@ -106,9 +106,6 @@ sap.ui.define(
           LcdRefresh(0, 0, 0, 640, 480);
           LCDSetPixelDepth(8);
 
-
-
-          // LCDWriteString(0, 2, 20, 375, "20pt Verdana", 27, "Tablet Instanciated");
         },
 
         getDeliveryItems: function (documentNumber) {
@@ -156,7 +153,10 @@ sap.ui.define(
           var totalPages = Math.ceil(Object.keys(delItemsJSON).length / itemsPerPage);
 
           var displayItems = function () {
-
+            LcdRefresh(0, 0, 50, 640, 300,);
+            ClearTablet();
+ 
+            // LcdRefresh(0, 0, 280, 640, 375,);
             var ypos = + 50;
             var xposDelivery = 10;
             var xposQuantity = 425;
@@ -181,12 +181,14 @@ sap.ui.define(
               ypos += 50; // increment the y position
 
             }
-
+            
             // Show "Next" button if there are more pages
             if (currentPage < totalPages) {
+                      
               that.nextButton();
               currentPage++;
               that.screenButtonListener(3, displayItems)
+              
 
             } else {
 
@@ -278,13 +280,13 @@ sap.ui.define(
         },
 
         signatureScreen: function () {
-          SetImageXSize(700);
-          SetImageYSize(200);
+          SetImageXSize(900);
+          SetImageYSize(240);
           SetImagePenWidth(10);
           ClearTablet();
           SetTabletState(1);
           KeyPadClearHotSpotList();
-          SetSigWindow(1, 27, 150, 582, 210);
+          SetSigWindow(0, 27, 150, 582, 210);
           this.signatureScreenImages();
 
 
@@ -309,76 +311,92 @@ sap.ui.define(
           }
 
           let acceptFunction = function () {
-         // check if signature is present before sending to BE
-         var signature = GetSigString();
+            var that = this;
 
-         if (signature > 0) {
-        
-            window.topazCallBack = async function (base64image) {
+            let checkForSignature = function () {
+                KeyPadAddHotSpot(4, 1,27, 150, 582, 210);
+                let signature = KeyPadQueryHotSpot(4);
+              if (signature > 0) {
 
-              const b64toBlob = (b64Data, contentType, sliceSize) => {
-                contentType = contentType || "";
-                sliceSize = sliceSize || 512;
 
-                var byteCharacters = atob(b64Data);
-                var byteArrays = [];
-
-                for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-                  var slice = byteCharacters.slice(offset, offset + sliceSize);
-                  var byteNumbers = new Array(slice.length);
-                  for (var i = 0; i < slice.length; i++) {
-                    byteNumbers[i] = slice.charCodeAt(i);
-                  }
-                  var byteArray = new Uint8Array(byteNumbers);
-                  byteArrays.push(byteArray);
-                }
-
-                var blob = new Blob(byteArrays, { type: contentType });
-                return blob;
-              };
-
-              let blobImage = b64toBlob(base64image, 'image/png');
-              const csrfResponse = await fetch('/sap/opu/odata/sap/ZTOPAZ_SIG_UPLOAD_SRV/', {
-                headers: {
-                  "X-CSRF-Token": "Fetch"
-                },
-                method: "HEAD"
-              });
-
-              const response = await fetch('/sap/opu/odata/sap/ZTOPAZ_SIG_UPLOAD_SRV/DeliveryDocumentSet', {
-                headers: {
-                  slug: deliveryNumber + '.png',
-                  "Content-Type": 'image/png',
-                  "DocumentNumber": deliveryNumber,
-                  "X-CSRF-Token": csrfResponse.headers.get("X-CSRF-Token")
-                },
-                method: "POST",
-                body: blobImage,
-              })
-                .then((response) => response.text())
-                .then((data) => {
-                  sap.m.MessageBox.show("Signature successfully uploaded to delivery document " + deliveryNumber, {
-                    icon: sap.m.MessageBox.Icon.SUCCESS,
-                    title: "Signature Complete",
-                    actions: [sap.m.MessageBox.Action.OK],
-                    onClose: function (oAction) {
-                      if (oAction === sap.m.MessageBox.Action.OK) {
-                        LcdRefresh(0, 0, 0, 640, 480);
-                        window.close();
+               
+                 
+                  window.topazCallBack = async function (base64image) {
+      
+                    const b64toBlob = (b64Data, contentType, sliceSize) => {
+                      contentType = contentType || "";
+                      sliceSize = sliceSize || 512;
+      
+                      var byteCharacters = atob(b64Data);
+                      var byteArrays = [];
+      
+                      for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                        var slice = byteCharacters.slice(offset, offset + sliceSize);
+                        var byteNumbers = new Array(slice.length);
+                        for (var i = 0; i < slice.length; i++) {
+                          byteNumbers[i] = slice.charCodeAt(i);
+                        }
+                        var byteArray = new Uint8Array(byteNumbers);
+                        byteArrays.push(byteArray);
                       }
-                    }
-                  });
-                });
-              return response;
+      
+                      var blob = new Blob(byteArrays, { type: contentType });
+                      return blob;
+                    };
+      
+                    let blobImage = b64toBlob(base64image, 'image/png');
+                    const csrfResponse = await fetch('/sap/opu/odata/sap/ZTOPAZ_SIG_UPLOAD_SRV/', {
+                      headers: {
+                        "X-CSRF-Token": "Fetch"
+                      },
+                      method: "HEAD"
+                    });
+      
+                    const response = await fetch('/sap/opu/odata/sap/ZTOPAZ_SIG_UPLOAD_SRV/DeliveryDocumentSet', {
+                      headers: {
+                        slug: deliveryNumber + '.png',
+                        "Content-Type": 'image/png',
+                        "DocumentNumber": deliveryNumber,
+                        "X-CSRF-Token": csrfResponse.headers.get("X-CSRF-Token")
+                      },
+                      method: "POST",
+                      body: blobImage,
+                    })
+                      .then((response) => response.text())
+                      .then((data) => {
+                        sap.m.MessageBox.show("Signature successfully uploaded to delivery document " + deliveryNumber, {
+                          icon: sap.m.MessageBox.Icon.SUCCESS,
+                          title: "Signature Complete",
+                          actions: [sap.m.MessageBox.Action.OK],
+                          onClose: function (oAction) {
+                            if (oAction === sap.m.MessageBox.Action.OK) {
+                              LcdRefresh(0, 0, 0, 640, 480);
+                              window.close();
+                            }
+                          }
+                        });
+                      });
+                    return response;
+                  }
+      
+                  SetImageXSize(900);
+                  SetImageYSize(240);
+                  SetImagePenWidth(5);
+                  GetSigImageB64(window.topazCallBack);
+      
+                
+              } else {
+                // setTimeout(checkForSignature, 3000);
+                that.signatureScreen();
+              }
+              
             }
+  
+            // Start checking hotspots
+            checkForSignature();
 
-            SetImageXSize(582);
-            SetImageYSize(210);
-            SetImagePenWidth(5);
-            GetSigImageB64(window.topazCallBack);
-          }else {
-            this.signatureScreen();
-          }
+
+        
           };
           let cancelFunction = function () {
             sap.m.MessageBox.show("Customer has canceled Delivery", {
@@ -400,13 +418,14 @@ sap.ui.define(
             this.signatureScreen();
 
           };
-          // Show "Accept" and "Cancel" buttons
+          // Show "Accept" "clear" "Cancel" buttons
           this.acceptButton();
           this.cancelButton();
           this.clearButton();
           this.screenButtonListener(0, acceptFunction.bind(this));
           this.screenButtonListener(1, cancelFunction.bind(this));
           this.screenButtonListener(2, clearFunction.bind(this));
+
 
         },
 
@@ -497,18 +516,21 @@ sap.ui.define(
 
         screenButtonListener: function (hotSpotNumber, callback) {
           SetLCDCaptureMode(2);
+          
           function checkHotspots() {
 
             let hotspot = KeyPadQueryHotSpot(hotSpotNumber);
 
 
             if (KeyPadQueryHotSpot(hotSpotNumber) > 0) {
-
+              // if (hotspot > 0) {
+                
               KeyPadClearHotSpotList();
               callback();
             } else {
               setTimeout(checkHotspots, 3000);
             }
+            
           }
 
           // Start checking hotspots
@@ -531,6 +553,8 @@ sap.ui.define(
           LCDSendGraphicUrl(0, 2, 0, 0, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/public/images/SignatureHeader.bmp"), document.baseURI).href);
           
           LCDSendGraphicUrl(0, 2, 27, 150, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/public/images/SignatureArea.bmp"), document.baseURI).href);
+         // hotspot for signature area
+          KeyPadAddHotSpot(4, 1,27, 150, 582, 210);
         },
         acceptButton: function () {
           LCDSendGraphicUrl(0, 2, 450, 375, new URL(sap.ui.require.toUrl("com/borderstates/topazsignature/public/images/AcceptButton.bmp"), document.baseURI).href);
