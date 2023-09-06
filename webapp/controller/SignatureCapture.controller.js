@@ -168,7 +168,7 @@ sap.ui.define(
             for (var i = startIndex; i < endIndex; i++) {
               var key = Object.keys(delItemsJSON)[i];
               var deliveryDoc = delItemsJSON[key];
-              var Material = deliveryDoc.Material;
+              var Material = deliveryDoc.DeliveryDocumentItemText;
               var itemQuantity = deliveryDoc.ActualDeliveryQuantity;
               var itemString = " " + Material;
               var quantityString = "Quantity: " + itemQuantity;
