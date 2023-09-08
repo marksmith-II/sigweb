@@ -175,9 +175,9 @@ sap.ui.define(
 
               LCDSetPixelDepth(8);
               //Item Text
-              LCDWriteString(0, 2, xposDelivery, ypos, "20pt ARIAL", 30, itemString);
+              LCDWriteString(0, 2, xposDelivery, ypos, "15pt ARIAL", 30, itemString);
               //Quantity Text
-              LCDWriteString(0, 2, xposQuantity, ypos, "20pt ARIAL", 30, quantityString);
+              LCDWriteString(0, 2, xposQuantity, ypos, "15pt ARIAL", 30, quantityString);
               ypos += 50; // increment the y position
 
             }
@@ -280,8 +280,8 @@ sap.ui.define(
         },
 
         signatureScreen: function () {
-          SetImageXSize(900);
-          SetImageYSize(240);
+          SetImageXSize(250);
+          SetImageYSize(75);
           SetImagePenWidth(10);
           ClearTablet();
           SetTabletState(1);
@@ -379,9 +379,9 @@ sap.ui.define(
                     return response;
                   }
       
-                  SetImageXSize(900);
-                  SetImageYSize(240);
-                  SetImagePenWidth(5);
+                  // SetImageXSize(900);
+                  // SetImageYSize(240);
+                  // SetImagePenWidth(10);
                   GetSigImageB64(window.topazCallBack);
       
                 
