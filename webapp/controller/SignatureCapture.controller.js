@@ -361,20 +361,33 @@ sap.ui.define(
                   method: "POST",
                   body: blobImage,
                 })
-                  .then((response) => response.text())
-                  .then((data) => {
-                    sap.m.MessageBox.show("Signature successfully uploaded to delivery document " + deliveryNumber, {
-                      icon: sap.m.MessageBox.Icon.SUCCESS,
-                      title: "Signature Complete",
-                      actions: [sap.m.MessageBox.Action.OK],
-                      onClose: function (oAction) {
-                        if (oAction === sap.m.MessageBox.Action.OK) {
-                          LcdRefresh(0, 0, 0, 640, 480);
-                          window.close();
-                        }
+                if (response.ok) {
+                  // Successful response (status code between 200 and 299)
+                  const data = await response.text();
+                  sap.m.MessageBox.show("Signature successfully uploaded to delivery document " + deliveryNumber, {
+                    icon: sap.m.MessageBox.Icon.SUCCESS,
+                    title: "Signature Complete",
+                    actions: [sap.m.MessageBox.Action.OK],
+                    onClose: function (oAction) {
+                      if (oAction === sap.m.MessageBox.Action.OK) {
+                        LcdRefresh(0, 0, 0, 640, 480);
+                        window.close();
                       }
-                    });
+                    }
                   });
+                } else {
+                  sap.m.MessageBox.show("Error saving signature " + deliveryNumber, {
+                    icon: sap.m.MessageBox.Icon.ERROR,
+                    title: "Signature Not Saved",
+                    actions: [sap.m.MessageBox.Action.OK],
+                    onClose: function (oAction) {
+                      if (oAction === sap.m.MessageBox.Action.OK) {
+                        LcdRefresh(0, 0, 0, 640, 480);
+                        window.close();
+                      }
+                    }
+                  });
+                }
                 return response;
               } else {
                 this.signatureScreen.bind(this)();
