@@ -371,6 +371,7 @@ sap.ui.define(
                     onClose: function (oAction) {
                       if (oAction === sap.m.MessageBox.Action.OK) {
                         LcdRefresh(0, 0, 0, 640, 480);
+                        Reset();
                         window.close();
                       }
                     }
@@ -383,6 +384,7 @@ sap.ui.define(
                     onClose: function (oAction) {
                       if (oAction === sap.m.MessageBox.Action.OK) {
                         LcdRefresh(0, 0, 0, 640, 480);
+                        Reset();
                         window.close();
                       }
                     }
